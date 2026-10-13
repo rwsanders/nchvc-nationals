@@ -48,8 +48,8 @@ jobs:
           python - <<'PY'
           import json
           d = json.load(open("data.json", encoding="utf-8"))
-          teams = {t["team"] for s in d["sheets"] for p in s["pools"] for t in p["teams"] if t["team"]}
-          assert len(d["sheets"]) >= 10 and len(teams) >= 100, f"suspicious scrape: {len(d['sheets'])} sheets, {len(teams)} teams"
+          teams = {(s["age"], t["team"]) for s in d["sheets"] for p in s["pools"] if not p["name"].startswith("Iron") for t in p["teams"] if t["team"]}
+          assert len(d["sheets"]) >= 10 and len(teams) >= 150, f"suspicious scrape: {len(d['sheets'])} sheets, {len(teams)} teams"
           print(f"ok: {len(d['sheets'])} sheets, {len(teams)} teams")
           PY
 
