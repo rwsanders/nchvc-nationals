@@ -1,0 +1,19 @@
+name: Check site
+
+on:
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check custom domain and certificate
+        run: |
+          for url in https://nat2026.robertwsanders.com/ https://nat2026.robertwsanders.com/data.json https://nat2026.robertwsanders.com/demo.html; do
+            curl -sS -o /dev/null -w "%{http_code}  $url\n" "$url"
+          done
+          echo | openssl s_client -connect nat2026.robertwsanders.com:443 -servername nat2026.robertwsanders.com 2>/dev/null \
+            | openssl x509 -noout -subject -issuer -enddate
