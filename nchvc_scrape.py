@@ -11,6 +11,7 @@ from openpyxl.utils import get_column_letter
 INDEX_ID = "1Uq8uFxIn-y3YwMAzIwCft1l4zgfFA0E7rKGuIBQvo5U"
 EXPORT = "https://docs.google.com/spreadsheets/d/{}/export?format=xlsx"
 SHEET_URL = "https://docs.google.com/spreadsheets/d/{}/edit"
+STALE = []  # sheet ids served from cache because the download failed
 DAYS = {"Thursday", "Friday", "Saturday", "Sunday", "Wednesday"}
 
 
@@ -33,6 +34,7 @@ def fetch(sheet_id, cache_dir, offline=False, tries=4):
             time.sleep(2 * (i + 1))
     if os.path.exists(path):
         print(f"  ! {sheet_id}: download failed ({last}); using cached copy", file=sys.stderr)
+        STALE.append(sheet_id)
         return path
     raise RuntimeError(f"could not download {sheet_id}: {last}")
 
@@ -366,7 +368,8 @@ def main():
         nm = sum(len(c["matches"]) for b in d["brackets"] for c in b["clusters"])
         print(f"  {l['label']:<28} pools={len(d['pools']):2} bracket-matches={nm:3} ref={len(d['ref'])}")
     data = {"generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
-            "source": f"https://docs.google.com/spreadsheets/d/{INDEX_ID}/edit", "info": info, "sheets": sheets}
+            "source": f"https://docs.google.com/spreadsheets/d/{INDEX_ID}/edit", "info": info, "sheets": sheets,
+            "stale": [s["label"] for s in sheets if s["id"] in STALE] + (["Bracket index"] if INDEX_ID in STALE else [])}
     with open(a.out, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
     print(f"wrote {a.out} ({os.path.getsize(a.out)//1024} KB) in {time.time()-t0:.0f}s")

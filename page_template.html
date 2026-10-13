@@ -264,9 +264,17 @@ function renderStrip(active) {
 
 // ---------- views ----------
 const main = $('#main');
+function freshness() {
+  const age = (Date.now() - new Date(D.generated)) / 60000;
+  const stale = D.stale || [];
+  const out = [];
+  if (LIVE && age > 20) out.push(`Scores were last pulled ${Math.round(age)} minutes ago. Updates may be delayed, so check the official bracket sheets.`);
+  if (stale.length) out.push(`Couldn't reach Google for ${stale.join(', ')} on the last update, so those may be behind.`);
+  return out.map(x => `<div class="notice">${esc(x)}</div>`).join('');
+}
 function footer() {
   const t = new Date(D.generated);
-  return `<div class="foot"><span>Pulled from the official NCHVC bracket sheets ${t.toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}. ${LIVE ? 'This page checks for new scores every minute.' : 'Scores appear here after the next refresh.'}</span>
+  return `${freshness()}<div class="foot"><span>Pulled from the official NCHVC bracket sheets ${t.toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}. ${LIVE ? 'This page checks for new scores every minute.' : 'Scores appear here after the next refresh.'}</span>
   <span>Always confirm game times on the <a href="${esc(D.source)}" target="_blank" rel="noopener">official bracket index</a> before heading to a court.</span></div>`;
 }
 
@@ -488,7 +496,7 @@ document.addEventListener('click', e => { if (!e.target.closest('.search')) sugg
 // ---------- boot ----------
 const LIVE = !D;  // hosted site: fetch data.json and poll for updates
 async function fetchData() {
-  const r = await fetch('data.json?t=' + Date.now(), { cache: 'no-store' });
+  const r = await fetch('data.json', { cache: 'no-cache' });  // revalidates with ETag: unchanged data costs a 304
   if (!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
 }
