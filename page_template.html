@@ -1,0 +1,516 @@
+<title>NCHVC Nationals 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: sticky search bar → division strip → one working view (overview / division / team / courts). Brackets drawn on the sheet's own grid. */
+:root {
+  --bg: #F3F6FA; --surface: #FFFFFF; --sunk: #E9EEF5; --ink: #0E1A2C; --muted: #5A6A82; --line: #D7DFEA;
+  --accent: #1D4ED8; --accent-ink: #FFFFFF; --accent-soft: #E3EBFD;
+  --live: #C2410C; --live-soft: #FDECE3; --win: #15803D; --win-soft: #E2F3E8;
+  --gold: #A87708; --silver: #6E7A8C; --bronze: #9A5B26; --copper: #B4502C; --iron: #475467;
+  --f-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --f-body: "Barlow", "Segoe UI", system-ui, sans-serif;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0A111E; --surface: #111B2D; --sunk: #0D1626; --ink: #E5ECF6; --muted: #91A0B7; --line: #23314A;
+  --accent: #7A9BFF; --accent-ink: #0A111E; --accent-soft: #1A2748;
+  --live: #FB8A4E; --live-soft: #3A2016; --win: #4ADE80; --win-soft: #11301F;
+  --gold: #E3B341; --silver: #B4BFCF; --bronze: #D6955A; --copper: #EE8A64; --iron: #98A6BA; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0A111E; --surface: #111B2D; --sunk: #0D1626; --ink: #E5ECF6; --muted: #91A0B7; --line: #23314A;
+  --accent: #7A9BFF; --accent-ink: #0A111E; --accent-soft: #1A2748;
+  --live: #FB8A4E; --live-soft: #3A2016; --win: #4ADE80; --win-soft: #11301F;
+  --gold: #E3B341; --silver: #B4BFCF; --bronze: #D6955A; --copper: #EE8A64; --iron: #98A6BA; color-scheme: dark }
+
+* { box-sizing: border-box }
+body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.45; }
+a { color: var(--accent) }
+button { font: inherit; color: inherit }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+.num { font-variant-numeric: tabular-nums }
+h1, h2, h3 { font-family: var(--f-display); font-weight: 700; letter-spacing: .01em; text-wrap: balance; margin: 0 }
+.label { font-size: 11.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600 }
+.muted { color: var(--muted) }
+
+/* top bar */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--surface); border-bottom: 1px solid var(--line); }
+.top-in { max-width: 1240px; margin: 0 auto; padding: 10px 16px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap }
+.brand { display: flex; align-items: baseline; gap: 10px; cursor: pointer; background: none; border: 0; padding: 0 }
+.brand h1 { font-size: 26px; line-height: 1 }
+.brand .yr { font-family: var(--f-display); font-size: 26px; color: var(--accent) }
+.search { position: relative; flex: 1 1 260px; min-width: 0 }
+.search input { width: 100%; padding: 10px 12px 10px 36px; border-radius: 999px; border: 1px solid var(--line); background: var(--sunk); color: var(--ink); font: inherit }
+.search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted) }
+.sugg { position: absolute; left: 0; right: 0; top: calc(100% + 6px); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: 0 12px 32px rgb(0 0 0 / .16); max-height: 60vh; overflow: auto; z-index: 30 }
+.sugg button { display: flex; width: 100%; justify-content: space-between; gap: 12px; padding: 9px 14px; border: 0; background: none; text-align: left; cursor: pointer }
+.sugg button:hover, .sugg button.on { background: var(--accent-soft) }
+.sugg .empty { padding: 12px 14px; color: var(--muted) }
+
+/* division strip */
+.strip { max-width: 1240px; margin: 0 auto; padding: 10px 16px 0; display: flex; flex-direction: column; gap: 6px }
+.strip-row { display: flex; gap: 6px; align-items: center; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin }
+.strip-row .label { min-width: 46px }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 12px; white-space: nowrap; cursor: pointer; font-weight: 600; font-size: 14px }
+.chip:hover { border-color: var(--accent) }
+.chip.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent) }
+
+main { max-width: 1240px; margin: 0 auto; padding: 18px 16px 48px; display: flex; flex-direction: column; gap: 18px }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px }
+.grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)) }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap }
+.spread { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap }
+
+/* overview */
+.hero { display: grid; gap: 16px; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) }
+@media (max-width: 760px) { .hero { grid-template-columns: 1fr } }
+.hero h2 { font-size: clamp(30px, 5vw, 44px); line-height: 1.02 }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 14px }
+.fact b { display: block; font-family: var(--f-display); font-size: 26px; line-height: 1.1 }
+.notice { border-left: 3px solid var(--live); background: var(--live-soft); padding: 10px 12px; border-radius: 0 8px 8px 0; font-size: 14px }
+.links { display: flex; flex-direction: column; gap: 6px; font-size: 14px }
+.divcard { display: flex; flex-direction: column; gap: 8px; text-align: left; cursor: pointer; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px }
+.divcard:hover { border-color: var(--accent) }
+.divcard h3 { font-size: 22px }
+.bar { height: 6px; background: var(--sunk); border-radius: 99px; overflow: hidden }
+.bar i { display: block; height: 100%; background: var(--win) }
+
+/* tabs */
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto }
+.tab { border: 0; background: none; padding: 9px 12px; cursor: pointer; font-family: var(--f-display); font-size: 18px; font-weight: 600; color: var(--muted); border-bottom: 3px solid transparent; white-space: nowrap; display: flex; gap: 7px; align-items: center }
+.tab.on { color: var(--ink); border-bottom-color: var(--accent) }
+.tier { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none }
+.t-gold { background: var(--gold) } .t-silver { background: var(--silver) } .t-bronze { background: var(--bronze) }
+.t-copper { background: var(--copper) } .t-iron { background: var(--iron) } .t-pool { background: var(--accent) }
+
+/* pool cards */
+.pool h3 { font-size: 22px }
+table { width: 100%; border-collapse: collapse; font-size: 14px }
+th { text-align: left; font-weight: 600; color: var(--muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; padding: 6px 6px; border-bottom: 1px solid var(--line) }
+td { padding: 6px; border-bottom: 1px solid var(--line); vertical-align: top }
+tr:last-child td { border-bottom: 0 }
+td.r, th.r { text-align: right }
+.tlink { background: none; border: 0; padding: 0; cursor: pointer; text-align: left; font-weight: 600; color: var(--ink) }
+.tlink:hover { color: var(--accent); text-decoration: underline }
+.adv { font-size: 13px; color: var(--muted) }
+.sched { display: flex; flex-direction: column; gap: 6px; margin-top: 10px }
+.m { display: grid; grid-template-columns: 62px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 7px 8px; border-radius: 8px; background: var(--sunk); font-size: 14px }
+.m .when { color: var(--muted); font-size: 12.5px; line-height: 1.2 }
+.m .vs { display: flex; flex-direction: column; min-width: 0 }
+.m .vs .tlink { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500 }
+.m .vs .tlink.w { font-weight: 700 }
+.sets { font-variant-numeric: tabular-nums; font-size: 13px; text-align: right; white-space: nowrap }
+.pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; white-space: nowrap }
+.p-final { background: var(--win-soft); color: var(--win) }
+.p-live { background: var(--live-soft); color: var(--live) }
+.p-upcoming { background: var(--sunk); color: var(--muted); border: 1px solid var(--line) }
+
+/* bracket canvas */
+.bwrap { overflow-x: auto; padding-bottom: 6px }
+.bcanvas { position: relative }
+.bm { position: absolute; width: 228px; background: var(--surface); border: 1px solid var(--line); border-radius: 9px; font-size: 13.5px; overflow: hidden }
+.bm.hl { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft) }
+.bm .hd { display: flex; justify-content: space-between; gap: 6px; padding: 5px 8px; background: var(--sunk); font-size: 12px; color: var(--muted) }
+.bm .hd b { color: var(--ink); font-weight: 600 }
+.slot { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 6px; padding: 5px 8px; align-items: center; border-top: 1px solid var(--line) }
+.slot .sd { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums }
+.slot .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.slot .nm .tlink { font-weight: 500 }
+.slot.w .nm .tlink { font-weight: 700 }
+.slot.w { background: var(--win-soft) }
+.slot .tbd { color: var(--muted); font-style: italic }
+.slot .bsc { grid-column: 2 / -1; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--win); font-weight: 600; margin-top: -3px }
+.bm .ft { padding: 4px 8px; font-size: 11.5px; color: var(--muted); border-top: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
+.btitle { display: flex; align-items: center; gap: 8px; margin: 4px 0 10px }
+.btitle h3 { font-size: 22px }
+.results { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px }
+.results .panel { padding: 10px 12px; min-width: 220px; flex: 1 1 220px }
+
+/* team view */
+.tv-head h2 { font-size: clamp(30px, 5vw, 42px); line-height: 1.05 }
+.next { border: 2px solid var(--accent); border-radius: var(--r); padding: 14px 16px; background: var(--accent-soft) }
+.next h3 { font-size: 24px }
+.path { display: flex; flex-direction: column; gap: 8px }
+.step { display: grid; grid-template-columns: 110px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface) }
+@media (max-width: 560px) { .step { grid-template-columns: 1fr; gap: 4px } .m { grid-template-columns: 54px minmax(0,1fr) auto } }
+.step .when b { display: block }
+.res-w { color: var(--win); font-weight: 700 } .res-l { color: var(--live); font-weight: 700 }
+
+/* courts */
+.courts { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)) }
+.court h3 { font-size: 22px; margin-bottom: 8px }
+.cm { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); font-size: 13.5px }
+.cm:first-of-type { border-top: 0 }
+.foot { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 4px }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden }
+.seg button { border: 0; background: var(--surface); padding: 6px 14px; cursor: pointer; font-weight: 600 }
+.seg button.on { background: var(--accent); color: var(--accent-ink) }
+@media (prefers-reduced-motion: no-preference) { .chip, .divcard, .tab { transition: border-color .15s, background .15s, color .15s } }
+</style>
+
+<header class="top">
+  <div class="top-in">
+    <button class="brand" id="brand" aria-label="Overview"><h1>NCHVC Nationals</h1><span class="yr">2026</span></button>
+    <div class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" type="search" placeholder="Find a team, e.g. “Patriots” or “(TX)”" autocomplete="off" aria-label="Search teams">
+      <div class="sugg" id="sugg" hidden></div>
+    </div>
+  </div>
+  <nav class="strip" id="strip" aria-label="Divisions"></nav>
+</header>
+<!--BANNER--><main id="main"></main>
+
+<script id="nchvc-data" type="application/json">__DATA__</script>
+<script>
+(() => {
+let D = JSON.parse(document.getElementById('nchvc-data').textContent);  // null on the hosted site -> loaded from data.json
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+const court = c => String(c || '').replace(/^AHSP Bluhawk\s*/i, 'Ct ').trim();
+const seedTxt = s => String(s || '').replace(/\.0$/, '');
+const DAYS = { Thursday: 0, Thu: 0, Thur: 0, THU: 0, Friday: 1, FRI: 1, Fri: 1, Saturday: 2, SAT: 2, Sat: 2 };
+const DAYNAME = ['Thu', 'Fri', 'Sat'];
+const store = { get(k) { try { return localStorage.getItem(k) } catch { return null } }, set(k, v) { try { localStorage.setItem(k, v) } catch {} } };
+
+// ---------- model ----------
+let sheets = [], poolSheets = [], divisions = [], all = [], teamIdx = new Map(), teams = [];
+function buildModel() {
+sheets = D.sheets;
+poolSheets = sheets.filter(s => s.kind === 'pools');
+divisions = [];
+all = [];   // every match, normalized
+teamIdx = new Map(); // key -> {name, age, divs:Set}
+for (const s of sheets) {
+  if (s.kind === 'pools') continue;
+  const dnum = s.divs[0];
+  let pools = s.pools, shared = null;
+  if (!pools.length) {
+    shared = poolSheets.find(p => p.age === s.age && p.divs.includes(dnum));
+    pools = shared ? shared.pools : [];
+  }
+  const short = dnum ? `${s.age} D${dnum}` : s.age;
+  divisions.push({ id: slug(short), short, sheet: s, gender: s.gender, age: s.age, pools, shared });
+}
+
+// flatten matches with a timeline key
+function tkey(day, time) {
+  let d = DAYS[day] ?? 0;
+  let t = String(time || '');
+  const dm = t.match(/^(THU|FRI|SAT)\s+/i);
+  if (dm) { d = DAYS[dm[1].toUpperCase()]; t = t.slice(dm[0].length) }
+  const m = t.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+  let mins = null;
+  if (m) { mins = (+m[1] % 12) * 60 + +m[2] + (/pm/i.test(m[3] || '') ? 720 : 0) }
+  return { d, mins, t };
+}
+function addTeam(name, div) {
+  if (!name) return;
+  const key = slug(div.age + ' ' + name);
+  if (!teamIdx.has(key)) teamIdx.set(key, { key, name, age: div.age, divs: new Set(), gender: div.gender });
+  teamIdx.get(key).divs.add(div.id);
+}
+const seenPool = new Set();
+for (const dv of divisions) {
+  const srcId = dv.shared ? dv.shared.id : dv.sheet.id;
+  for (const p of dv.pools) {
+    p.teams.forEach(t => addTeam(t.team, dv));
+    const pk = srcId + p.name;
+    if (seenPool.has(pk)) continue; seenPool.add(pk);
+    let last = null;
+    for (const m of p.matches) {
+      let k = tkey(p.name.startsWith('Iron') ? 'Friday' : 'Thursday', m.time);
+      if (k.mins == null && last) k = { ...last, mins: last.mins + 0.5 * (m.n || 1), rolling: true, start: last.t };
+      else last = k;
+      all.push({ kind: 'pool', div: dv, pool: p, court: m.court, day: k.d, mins: k.mins, timeLabel: k.rolling ? 'Rolling' : (k.t || m.time), rolling: !!k.rolling, start: k.start || '', order: m.n, ofN: p.matches.length, divs: [dv],
+        a: m.a, b: m.b, sets: m.sets, status: m.status, winner: m.winner, name: `${p.name} · Match ${m.n}`, bestOf: p.bestOf });
+    }
+  }
+  for (const b of dv.sheet.brackets) for (const cl of b.clusters) for (const m of cl.matches) {
+    const k = tkey(m.day, m.time);
+    m._tab = b.tab;
+    [m.top.team, m.bottom.team].forEach(n => addTeam(n, dv));
+    all.push({ kind: 'bracket', div: dv, tab: b.tab, cl, ref: m, court: m.court, day: k.d, mins: k.mins, timeLabel: m.time,
+      a: m.top.team, b: m.bottom.team, sa: m.top.seed, sb: m.bottom.seed, sets: m.sets, status: m.status, winner: m.winner, name: m.name, bestOf: m.bestOf, loserTo: m.loserTo });
+  }
+}
+all.sort((x, y) => x.day - y.day || (x.mins ?? 9999) - (y.mins ?? 9999));
+teams = [...teamIdx.values()].filter(t => !/^Team \d+$/.test(t.name));
+}
+const inDiv = (m, dv) => m.div === dv || (m.kind === 'pool' && dv.pools.includes(m.pool));
+const progress = dv => { const ms = all.filter(m => inDiv(m, dv)); return { done: ms.filter(m => m.status === 'final').length, tot: ms.length } };
+
+function tierOf(tab) {
+  const t = tab.toLowerCase();
+  if (t.includes('pool')) return 'pool';
+  for (const k of ['gold', 'silver', 'bronze', 'copper', 'iron']) if (t.includes(k)) return k;
+  if (t.includes('gbss')) return 'gold';
+  return 'pool';
+}
+const setsTxt = (sets, flip) => (sets || []).map(([a, b]) => flip ? `${b}-${a}` : `${a}-${b}`).join(', ');
+const pill = st => `<span class="pill p-${st}">${st === 'upcoming' ? 'Upcoming' : st === 'live' ? 'In progress' : 'Final'}</span>`;
+const tlink = (name, age, cls = '') => name ? `<button class="tlink ${cls}" data-team="${esc(slug(age + ' ' + name))}">${esc(name)}</button>` : '<span class="tbd">TBD</span>';
+const when = m => m.rolling ? `${DAYNAME[m.day]} · after ${esc(m.start)} start` : `${DAYNAME[m.day]} ${esc(m.timeLabel || '')}`;
+const rollNote = m => m.rolling ? `Match ${m.order} of ${m.ofN} on this court. Rolling start: begins when the previous match ends (pool starts ${esc(m.start)}).` : '';
+
+// ---------- chrome ----------
+const strip = $('#strip');
+function renderStrip(active) {
+  const rows = [['Girls', divisions.filter(d => d.gender === 'Girls')], ['Boys', divisions.filter(d => d.gender === 'Boys')]];
+  strip.innerHTML = rows.map(([g, ds]) => `<div class="strip-row"><span class="label">${g}</span>${ds.map(d => `<button class="chip ${active === d.id ? 'on' : ''}" data-go="d-${d.id}">${esc(d.short)}</button>`).join('')}${g === 'Girls' ? `<span style="flex:1"></span><button class="chip ${active === 'courts' ? 'on' : ''}" data-go="courts">By court</button>` : ''}</div>`).join('');
+}
+
+// ---------- views ----------
+const main = $('#main');
+function footer() {
+  const t = new Date(D.generated);
+  return `<div class="foot"><span>Pulled from the official NCHVC bracket sheets ${t.toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}. ${LIVE ? 'This page checks for new scores every minute.' : 'Scores appear here after the next refresh.'}</span>
+  <span>Always confirm game times on the <a href="${esc(D.source)}" target="_blank" rel="noopener">official bracket index</a> before heading to a court.</span></div>`;
+}
+
+function viewHome() {
+  const info = D.info || {};
+  const notices = [...new Set(sheets.flatMap(s => s.notices || []))].filter(n => /DRAFT|change/i.test(n));
+  const venue = Object.keys(info).find(k => k.includes('Bluhawk')) || '';
+  const linkKeys = Object.keys(info).filter(k => !k.startsWith('_') && k !== venue);
+  const nTeams = teamIdx.size ? new Set([...teamIdx.values()].filter(t => !/^Team \d$/.test(t.name)).map(t => t.key)).size : 0;
+  const tot = all.length, done = all.filter(m => m.status === 'final').length;
+  const phone = (info._scores || '').replace(/.*Text to\s*/i, '');
+  main.innerHTML = `
+  <section class="hero">
+    <div class="panel">
+      <span class="label">October 15–17 · Overland Park, KS</span>
+      <h2>National Christian Homeschool Volleyball Championships</h2>
+      <div class="facts">
+        <div class="fact"><b class="num">${nTeams}</b><span class="muted">teams</span></div>
+        <div class="fact"><b class="num">${divisions.length}</b><span class="muted">divisions</span></div>
+        <div class="fact"><b class="num">${done}/${tot}</b><span class="muted">matches final</span></div>
+        <div class="fact"><b>Thu → Sat</b><span class="muted">pools, then brackets</span></div>
+      </div>
+    </div>
+    <div class="panel" style="display:flex;flex-direction:column;gap:10px">
+      ${notices.map(n => `<div class="notice">${esc(n)}</div>`).join('')}
+      <div><span class="label">Venue</span><div>${esc(venue.split('\n')[0])}<br><span class="muted">${esc(venue.split('\n').slice(1, 3).join(', ').replace(/:\s*$/, ''))}</span> · <a href="${esc(info[venue] || '#')}" target="_blank" rel="noopener">Map</a></div></div>
+      <div><span class="label">Report scores by text</span><div class="num" style="user-select:all;font-weight:600">${esc(phone)}</div></div>
+      <div class="links">${linkKeys.map(k => `<a href="${esc(info[k])}" target="_blank" rel="noopener">${esc(k)}</a>`).join('')}</div>
+    </div>
+  </section>
+  <section>
+    <div class="spread" style="margin-bottom:10px"><h2 style="font-size:26px">Divisions</h2><span class="muted">How it works: Thursday pools seed Friday's Gold Ball brackets; losers drop to Copper/Bronze; pool last-place teams play Iron.</span></div>
+    <div class="grid">${divisions.map(d => {
+      const pr = progress(d); const nt = new Set(d.pools.filter(p => !p.name.startsWith('Iron')).flatMap(p => p.teams.map(t => t.team))).size;
+      const tabs = d.sheet.brackets.map(b => b.tab);
+      return `<button class="divcard" data-go="d-${d.id}">
+        <div class="spread"><h3>${esc(d.short)}</h3><span class="muted">${d.gender}</span></div>
+        <span class="muted">${nt} teams${d.shared ? ' · pools shared with ' + esc(d.shared.label.replace(/:.*$/, '').replace(/Division /, 'D')) : ''}</span>
+        <div class="row" style="gap:6px">${tabs.map(t => `<span class="tier t-${tierOf(t)}" title="${esc(t)}"></span>`).join('')}<span class="muted" style="font-size:13px">${esc(tabs.join(' · '))}</span></div>
+        <div class="bar"><i style="width:${pr.tot ? (100 * pr.done / pr.tot).toFixed(1) : 0}%"></i></div>
+        <span class="muted num" style="font-size:13px">${pr.done} of ${pr.tot} matches final</span>
+      </button>`; }).join('')}</div>
+  </section>
+  ${footer()}`;
+}
+
+function poolCard(p, dv) {
+  const ms = all.filter(m => m.kind === 'pool' && m.pool === p);
+  const done = p.standings.length && p.standings.every(s => s.team);
+  const st = ms.every(m => m.status === 'final') && ms.length ? 'final' : ms.some(m => m.status !== 'upcoming') ? 'live' : 'upcoming';
+  return `<article class="panel pool">
+    <div class="spread"><h3>${esc(p.name)}</h3>${pill(st)}</div>
+    <div class="muted" style="font-size:13px;margin-bottom:8px">${esc(court(p.court) || 'Various courts')} · ${p.bestOf === 3 ? 'Best of 3' : '2 sets per match'}</div>
+    <table><thead><tr><th>Team</th><th class="r">Sets W–L</th><th class="r">+/-</th></tr></thead><tbody>
+    ${[...p.teams].sort((a, b) => done ? 0 : 0).map(t => `<tr><td>${t.team ? tlink(t.team, dv.age) : `<span class="tbd muted">Seed ${t.seed} (TBD)</span>`}</td><td class="r num">${t.w ?? 0}–${t.l ?? 0}</td><td class="r num">${t.diff > 0 ? '+' : ''}${t.diff}</td></tr>`).join('')}
+    </tbody></table>
+    <div class="sched">${ms.map(m => matchRow(m, dv)).join('')}</div>
+    ${p.standings.length ? `<div style="margin-top:12px"><span class="label">${done ? 'Final standings' : 'Where each finish goes'}</span>
+      <table><tbody>${p.standings.map(s => `<tr><td style="width:44px" class="num">${esc(s.rank)}</td><td>${s.team ? tlink(s.team, dv.age) : ''}</td><td class="adv r">→ ${esc(s.adv)}</td></tr>`).join('')}</tbody></table></div>` : ''}
+  </article>`;
+}
+function matchRow(m, dv) {
+  const flipW = m.winner && m.winner === m.b;
+  return `<div class="m"><div class="when">${when(m)}${m.kind === 'bracket' || !m.pool?.court || m.court !== m.pool.court ? `<br>${esc(court(m.court))}` : ''}</div>
+    <div class="vs">${tlink(m.a, dv.age, m.winner === m.a ? 'w' : '')}${tlink(m.b, dv.age, m.winner === m.b ? 'w' : '')}</div>
+    <div class="sets">${m.sets?.length ? esc(setsTxt(m.sets)) : pill(m.status)}</div></div>`;
+}
+
+function bracketCanvas(cl, dv, hlTeam) {
+  const ms = cl.matches;
+  const cols = [...new Set(ms.map(m => m.col))].sort((a, b) => a - b);
+  const minR = Math.min(...ms.map(m => m.row));
+  const PX = 10.5, W = 248;
+  const H = Math.max(...ms.map(m => m.row)) - minR;
+  const cards = ms.map(m => {
+    const x = cols.indexOf(m.col) * W, y = (m.row - minR) * PX;
+    const hl = hlTeam && (m.top.team === hlTeam || m.bottom.team === hlTeam);
+    const sl = s => {
+      const isW = m.winner && s.team === m.winner;
+      const sets = s.score && isW ? s.score : '';
+      return `<div class="slot ${isW ? 'w' : ''}"><span class="sd">${esc(seedTxt(s.seed))}</span><span class="nm">${s.team ? tlink(s.team, dv.age, isW ? 'w' : '') : '<span class="tbd">TBD</span>'}</span>${sets ? `<span class="bsc">${esc(sets)}</span>` : ''}</div>`;
+    };
+    const bo = m.bestOf === 5 ? ' · Bo5' : '';
+    return `<div class="bm ${hl ? 'hl' : ''}" style="left:${x}px;top:${y}px"><div class="hd"><b>${esc(m.name.replace(new RegExp('^' + dv.age + '\\s*(D\\d\\s*)?|^' + dv.sheet.label + '\\s*', 'i'), ''))}</b><span class="num">${DAYNAME[DAYS[m.day] ?? 0]} ${esc(m.time)}</span></div>
+      ${sl(m.top)}${sl(m.bottom)}<div class="ft">${esc(court(m.court))}${bo}${m.loserTo ? ' · Loser → ' + esc(m.loserTo) : ''}</div>${m.status === 'live' ? `<div class="ft" style="color:var(--live);font-weight:700">● In progress · ${esc(setsTxt(m.sets))}</div>` : ''}</div>`;
+  }).join('');
+  return `<div class="bwrap"><div class="bcanvas" style="width:${cols.length * W - 20}px;height:${H * PX + 130}px">${cards}</div></div>`;
+}
+
+function viewDivision(dv, tab) {
+  const tabs = [];
+  const regPools = dv.pools.filter(p => !p.name.startsWith('Iron'));
+  const ironPools = dv.pools.filter(p => p.name.startsWith('Iron'));
+  if (regPools.length) tabs.push({ id: 'pools', label: dv.shared ? 'Pools (shared)' : 'Pools', tier: 'pool' });
+  for (const b of dv.sheet.brackets) tabs.push({ id: slug(b.tab), label: b.tab.replace(/ Brackets?$/, '').replace('GBSS', 'Gold Ball Semis'), tier: tierOf(b.tab), b });
+  if (ironPools.length && !tabs.some(t => t.id === 'iron-pools')) tabs.splice(1, 0, { id: 'iron-pools', label: 'Iron Pools', tier: 'iron' });
+  const cur = tabs.find(t => t.id === tab) || tabs[0];
+  const pr = progress(dv);
+  let body = '';
+  if (cur.id === 'pools') {
+    body = (dv.shared ? `<p class="muted" style="margin:0">${esc(dv.age)} Division ${esc(dv.shared.divs.join(' & '))} play pools together. Advancement on the right of each pool shows which division each finish goes to.</p>` : '') +
+      `<div class="grid">${regPools.map(p => poolCard(p, dv)).join('')}</div>`;
+  } else if (cur.id === 'iron-pools') {
+    body = `<div class="grid">${ironPools.map(p => poolCard(p, dv)).join('')}</div>`;
+  } else {
+    const b = cur.b;
+    body = b.clusters.map(cl => {
+      const finalM = cl.matches.reduce((a, m) => (m.col > a.col ? m : a), cl.matches[0]);
+      const title = cl.label ? `${cl.label} ${cur.label}` : (cl.matches.length === 1 ? finalM.name.replace(new RegExp('^' + dv.age + '\\s*(D\\d\\s*)?', 'i'), '') : cur.label);
+      return `<section><div class="btitle"><span class="tier t-${cur.tier}"></span><h3>${esc(title)}</h3></div>${bracketCanvas(cl, dv)}</section>`;
+    }).join('') + (b.results.length ? `<div class="results">${b.results.map(r => `<div class="panel"><span class="label">${esc(r.title)}</span><table><tbody>${r.rows.map(x => `<tr><td class="num" style="width:40px">${esc(x.rank)}</td><td>${x.team ? tlink(x.team, dv.age) : '<span class="tbd muted">TBD</span>'}</td><td class="adv r">→ ${esc(x.adv)}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div>` : '');
+  }
+  main.innerHTML = `
+  <div class="spread"><div><span class="label">${esc(dv.gender)}</span><h2 style="font-size:36px;line-height:1.05">${esc(dv.short)}</h2></div>
+    <div class="row"><span class="muted num">${pr.done} of ${pr.tot} matches final</span><a href="${esc(dv.sheet.url)}" target="_blank" rel="noopener">Official sheet ↗</a></div></div>
+  <div class="tabs" role="tablist">${tabs.map(t => `<button class="tab ${t === cur ? 'on' : ''}" role="tab" aria-selected="${t === cur}" data-go="d-${dv.id}~${t.id}"><span class="tier t-${t.tier}"></span>${esc(t.label)}</button>`).join('')}</div>
+  ${body}
+  ${footer()}`;
+}
+
+function viewTeam(key) {
+  const t = teamIdx.get(key);
+  if (!t) { main.innerHTML = `<div class="panel">No team found for that link. Try the search box above.</div>`; return }
+  const mine = all.filter(m => (m.a === t.name || m.b === t.name) && m.div.age === t.age);
+  const uniq = []; const seen = new Set();
+  for (const m of mine) { const k = m.kind + m.name + m.a + m.b + m.day + m.mins; if (!seen.has(k)) { seen.add(k); uniq.push(m) } }
+  const dvs = [...t.divs].map(id => divisions.find(d => d.id === id));
+  const pools = []; const ps = new Set();
+  for (const dv of dvs) for (const p of dv.pools) if (p.teams.some(x => x.team === t.name) && !ps.has(p)) { ps.add(p); pools.push({ p, dv }) }
+  const next = uniq.find(m => m.status !== 'final');
+  const rec = uniq.filter(m => m.status === 'final').reduce((r, m) => (m.winner === t.name ? r.w++ : m.winner ? r.l++ : r.s++, r), { w: 0, l: 0, s: 0 });
+  const opp = m => m.a === t.name ? m.b : m.a;
+  const res = m => m.status !== 'final' ? pill(m.status) : !m.winner ? `<span class="muted" style="font-weight:700">Split</span> <span class="sets">${esc(setsTxt(m.sets, m.b === t.name))}</span>` : m.winner === t.name ? `<span class="res-w">W</span> <span class="sets">${esc(setsTxt(m.sets, m.b === t.name && m.kind === 'pool'))}</span>` : `<span class="res-l">L</span> <span class="sets">${esc(setsTxt(m.sets, m.b === t.name && m.kind === 'pool'))}</span>`;
+  // where they go from pool
+  const poolInfo = pools.map(({ p, dv }) => {
+    const mine = p.standings.find(s => s.team === t.name);
+    const row = p.teams.find(x => x.team === t.name);
+    return `<div class="panel"><div class="spread"><h3 style="font-size:22px">${esc(p.name)}</h3><button class="tlink" style="color:var(--accent)" data-go="d-${dv.id}~${p.name.startsWith('Iron') ? 'iron-pools' : 'pools'}">${esc(dv.short)} pools →</button></div>
+      <div class="muted" style="margin-bottom:8px">${esc(court(p.court))} · Sets ${row?.w ?? 0}–${row?.l ?? 0} · ${row?.diff > 0 ? '+' : ''}${row?.diff ?? 0} points</div>
+      ${mine ? `<div><b>Finished ${esc(mine.rank)}</b> → ${esc(mine.adv)}</div>` :
+        p.standings.length ? `<span class="label">If they finish…</span><table><tbody>${p.standings.map(s => `<tr><td class="num" style="width:44px">${esc(s.rank)}</td><td class="adv">→ ${esc(s.adv)}</td></tr>`).join('')}</tbody></table>` : ''}
+    </div>`;
+  }).join('');
+  main.innerHTML = `
+  <div class="tv-head spread"><div><span class="label">${esc(t.gender)} · ${esc(t.age)} · ${esc(dvs.map(d => d.short).join(', '))}</span><h2>${esc(t.name)}</h2></div>
+    <div class="row"><span class="num" style="font-family:var(--f-display);font-size:28px">${rec.w}–${rec.l}${rec.s ? '–' + rec.s : ''}</span><span class="muted">match record${rec.s ? ' (W–L–split)' : ''}</span></div></div>
+  ${next ? `<div class="next"><span class="label">${next.status === 'live' ? 'Playing now' : 'Next match'}</span>
+     <h3>${when(next)} · ${esc(court(next.court))}</h3>
+     ${next.rolling ? `<div class="muted" style="margin-bottom:4px">${rollNote(next)}</div>` : ''}
+     <div>vs ${opp(next) ? tlink(opp(next), t.age) : `<span class="muted">${esc(seedTxt(next.a === t.name ? next.sb : next.sa) || 'TBD')} (TBD)</span>`} <span class="muted">· ${esc(next.name)}</span></div></div>` :
+     `<div class="panel muted">No upcoming matches listed yet. Bracket spots fill in as pool and bracket results come in.</div>`}
+  <section><h3 style="font-size:24px;margin-bottom:8px">Schedule &amp; results</h3><div class="path">${uniq.map(m => `<div class="step">
+      <div class="when"><b>${when(m)}</b><span class="muted">${esc(court(m.court))}${m.rolling ? ` · match ${m.order} of ${m.ofN}` : ''}</span></div>
+      <div style="min-width:0"><div class="muted" style="font-size:12.5px">${esc(m.name)}${m.kind === 'bracket' && m.loserTo && m.status !== 'final' ? ` · loser → ${esc(m.loserTo)}` : ''}</div><div>vs ${opp(m) ? tlink(opp(m), t.age) : '<span class="tbd muted">TBD</span>'}</div></div>
+      <div>${res(m)}</div></div>`).join('')}</div></section>
+  <div class="grid">${poolInfo}</div>
+  ${uniq.filter(m => m.kind === 'bracket').length ? '' : `<p class="muted" style="margin:0">Bracket games appear here once pool results place this team into a bracket.</p>`}
+  ${footer()}`;
+}
+
+function viewCourts(day) {
+  const days = [...new Set(all.map(m => m.day))].sort();
+  const d = days.includes(day) ? day : days[0];
+  const by = new Map();
+  for (const m of all.filter(m => m.day === d)) { const c = court(m.court) || 'TBD'; if (!by.has(c)) by.set(c, []); by.get(c).push(m) }
+  const keys = [...by.keys()].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  main.innerHTML = `<div class="spread"><h2 style="font-size:36px">By court</h2>
+    <div class="seg" role="tablist">${days.map(x => `<button class="${x === d ? 'on' : ''}" data-go="courts~${x}">${['Thursday', 'Friday', 'Saturday'][x]}</button>`).join('')}</div></div>
+  <p class="muted" style="margin:0">All divisions at AdventHealth Sports Park at Bluhawk. Pool matches after the first are “rolling”: they start when the previous match ends.</p>
+  <div class="courts">${keys.map(k => `<div class="panel court"><h3>${esc(k)}</h3>${by.get(k).map(m => `<div class="cm"><div class="num muted">${m.rolling ? `#${m.order} rolling` : esc(String(m.timeLabel).replace(/^(THU|FRI|SAT)\s+/i, ''))}</div>
+      <div style="min-width:0"><div style="font-size:12px" class="muted">${esc(m.div.short)} · ${esc(m.name.replace(new RegExp('^' + m.div.age + '\\s*(D\\d\\s*)?', 'i'), ''))}</div>
+      <div>${m.a ? tlink(m.a, m.div.age, m.winner === m.a ? 'w' : '') : `<span class="tbd muted">${esc(seedTxt(m.sa) || 'TBD')}</span>`} <span class="muted">vs</span> ${m.b ? tlink(m.b, m.div.age, m.winner === m.b ? 'w' : '') : `<span class="tbd muted">${esc(seedTxt(m.sb) || 'TBD')}</span>`}</div>
+      ${m.sets?.length ? `<div class="sets" style="text-align:left">${esc(setsTxt(m.sets))}</div>` : ''}</div></div>`).join('')}</div>`).join('')}</div>
+  ${footer()}`;
+}
+
+// ---------- routing ----------
+let current = 'home';
+function go(route, push = true, keepScroll = false) {
+  current = route;
+  if (push) { try { history.replaceState(null, '', '#' + route.replace(/[^A-Za-z0-9._~-]/g, '-')) } catch {} store.set('nchvc.route', route) }
+  const [head, sub] = route.split('~');
+  if (!keepScroll) window.scrollTo({ top: 0 });
+  if (head.startsWith('d-')) { const dv = divisions.find(d => d.id === head.slice(2)); if (dv) { renderStrip(dv.id); return viewDivision(dv, sub) } }
+  if (head.startsWith('t-')) { renderStrip(''); return viewTeam(head.slice(2)) }
+  if (head === 'courts') { renderStrip('courts'); return viewCourts(sub != null ? +sub : undefined) }
+  renderStrip(''); viewHome();
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-team]');
+  if (t) { e.preventDefault(); return go('t-' + t.dataset.team) }
+  const g = e.target.closest('[data-go]');
+  if (g) { e.preventDefault(); go(g.dataset.go) }
+});
+$('#brand').addEventListener('click', () => go('home'));
+
+// ---------- search ----------
+const q = $('#q'), sugg = $('#sugg');
+let hits = [], sel = 0;
+function renderSugg() {
+  const v = q.value.trim().toLowerCase();
+  if (!v) { sugg.hidden = true; return }
+  hits = teams.filter(t => t.name.toLowerCase().includes(v)).sort((a, b) => a.name.toLowerCase().indexOf(v) - b.name.toLowerCase().indexOf(v) || a.name.localeCompare(b.name)).slice(0, 40);
+  sel = Math.min(sel, Math.max(hits.length - 1, 0));
+  sugg.innerHTML = hits.length ? hits.map((t, i) => `<button class="${i === sel ? 'on' : ''}" data-team="${esc(t.key)}"><span>${esc(t.name)}</span><span class="muted">${esc(t.age)} · ${esc([...t.divs].map(id => divisions.find(d => d.id === id).short).join(', '))}</span></button>`).join('')
+    : `<div class="empty">No team matches “${esc(q.value)}”. Try part of the name or a state like (TX).</div>`;
+  sugg.hidden = false;
+}
+q.addEventListener('input', () => { sel = 0; renderSugg() });
+q.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown') { sel = Math.min(sel + 1, hits.length - 1); renderSugg(); e.preventDefault() }
+  else if (e.key === 'ArrowUp') { sel = Math.max(sel - 1, 0); renderSugg(); e.preventDefault() }
+  else if (e.key === 'Enter' && hits[sel]) { go('t-' + hits[sel].key); q.value = ''; sugg.hidden = true; q.blur() }
+  else if (e.key === 'Escape') { sugg.hidden = true }
+});
+sugg.addEventListener('click', () => { q.value = ''; sugg.hidden = true });
+document.addEventListener('click', e => { if (!e.target.closest('.search')) sugg.hidden = true });
+
+// ---------- boot ----------
+const LIVE = !D;  // hosted site: fetch data.json and poll for updates
+async function fetchData() {
+  const r = await fetch('data.json?t=' + Date.now(), { cache: 'no-store' });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+function startApp() {
+  buildModel();
+  const start = (location.hash || '').slice(1) || store.get('nchvc.route') || 'home';
+  go(start, false);
+}
+if (!LIVE) startApp();
+else {
+  main.innerHTML = '<div class="panel muted">Loading the latest brackets…</div>';
+  fetchData().then(d => { D = d; startApp() })
+    .catch(() => { main.innerHTML = '<div class="panel">Could not load bracket data. Check your connection and reload the page.</div>' });
+  setInterval(async () => {
+    if (document.hidden) return;
+    try {
+      const d = await fetchData();
+      if (d.generated === D.generated) return;
+      D = d; buildModel();
+      if (document.activeElement !== q) go(current, false, true);  // re-render in place, keep scroll
+    } catch {}
+  }, 60000);
+}
+})();
+</script>

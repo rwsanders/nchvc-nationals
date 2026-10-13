@@ -1,0 +1,69 @@
+name: Refresh brackets
+
+on:
+  schedule:
+    # Tournament week (Oct 14-18): every 5 minutes. GitHub may run these a few minutes late.
+    - cron: "*/5 * 14-18 10 *"
+    # Rest of the year: once a day
+    - cron: "0 12 * * *"
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+
+concurrency:
+  group: refresh
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SWA_TOKEN: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      # Keep the last good downloads so a Google hiccup doesn't take the site down
+      - uses: actions/cache@v4
+        with:
+          path: .cache
+          key: sheets-${{ github.run_id }}
+          restore-keys: sheets-
+
+      - name: Pull sheets
+        run: python nchvc_scrape.py
+
+      - name: Sanity check
+        run: |
+          python - <<'PY'
+          import json
+          d = json.load(open("data.json", encoding="utf-8"))
+          teams = {t["team"] for s in d["sheets"] for p in s["pools"] for t in p["teams"] if t["team"]}
+          assert len(d["sheets"]) >= 10 and len(teams) >= 100, f"suspicious scrape: {len(d['sheets'])} sheets, {len(teams)} teams"
+          print(f"ok: {len(d['sheets'])} sheets, {len(teams)} teams")
+          PY
+
+      - name: Build site
+        run: |
+          python simulate_demo.py
+          python build_page.py --site
+
+      - name: Deploy to Azure Static Web Apps
+        if: ${{ env.SWA_TOKEN != '' }}
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: upload
+          app_location: site
+          skip_app_build: true
+          skip_api_build: true
