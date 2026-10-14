@@ -1,66 +1,78 @@
 <title>NCHVC Nationals 2026</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: sticky search bar → division strip → one working view (overview / division / team / courts). Brackets drawn on the sheet's own grid. */
+/* Layout: slim sticky bar (brand, freshness, search) → nav strip → one working view. Brackets drawn on the sheet's own grid, or as a list on phones. */
 :root {
-  --bg: #F3F6FA; --surface: #FFFFFF; --sunk: #E9EEF5; --ink: #0E1A2C; --muted: #5A6A82; --line: #D7DFEA;
+  --bg: #F3F6FA; --surface: #FFFFFF; --sunk: #E9EEF5; --ink: #0E1A2C; --muted: #536379; --line: #D7DFEA;
   --accent: #1D4ED8; --accent-ink: #FFFFFF; --accent-soft: #E3EBFD;
-  --live: #C2410C; --live-soft: #FDECE3; --win: #15803D; --win-soft: #E2F3E8;
+  --live: #B93C0A; --live-soft: #FDECE3; --win: #166534; --win-soft: #E2F3E8;
   --gold: #A87708; --silver: #6E7A8C; --bronze: #9A5B26; --copper: #B4502C; --iron: #475467;
   --f-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
   --f-body: "Barlow", "Segoe UI", system-ui, sans-serif;
   --r: 10px;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #0A111E; --surface: #111B2D; --sunk: #0D1626; --ink: #E5ECF6; --muted: #91A0B7; --line: #23314A;
+  --bg: #0A111E; --surface: #111B2D; --sunk: #0D1626; --ink: #E5ECF6; --muted: #97A6BC; --line: #23314A;
   --accent: #7A9BFF; --accent-ink: #0A111E; --accent-soft: #1A2748;
   --live: #FB8A4E; --live-soft: #3A2016; --win: #4ADE80; --win-soft: #11301F;
   --gold: #E3B341; --silver: #B4BFCF; --bronze: #D6955A; --copper: #EE8A64; --iron: #98A6BA; color-scheme: dark } }
 :root[data-theme="dark"] {
-  --bg: #0A111E; --surface: #111B2D; --sunk: #0D1626; --ink: #E5ECF6; --muted: #91A0B7; --line: #23314A;
+  --bg: #0A111E; --surface: #111B2D; --sunk: #0D1626; --ink: #E5ECF6; --muted: #97A6BC; --line: #23314A;
   --accent: #7A9BFF; --accent-ink: #0A111E; --accent-soft: #1A2748;
   --live: #FB8A4E; --live-soft: #3A2016; --win: #4ADE80; --win-soft: #11301F;
   --gold: #E3B341; --silver: #B4BFCF; --bronze: #D6955A; --copper: #EE8A64; --iron: #98A6BA; color-scheme: dark }
 
 * { box-sizing: border-box }
+html { scroll-padding-top: 76px }
 body { background: var(--bg); color: var(--ink); font-family: var(--f-body); font-size: 15px; line-height: 1.45; }
 a { color: var(--accent) }
 button { font: inherit; color: inherit }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
 .num { font-variant-numeric: tabular-nums }
 h1, h2, h3 { font-family: var(--f-display); font-weight: 700; letter-spacing: .01em; text-wrap: balance; margin: 0 }
+h2:focus { outline: none }
 .label { font-size: 11.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600 }
 .muted { color: var(--muted) }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap }
 
 /* top bar */
 .top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--surface); border-bottom: 1px solid var(--line); }
-.top-in { max-width: 1240px; margin: 0 auto; padding: 10px 16px; display: flex; gap: 14px; align-items: center; flex-wrap: wrap }
-.brand { display: flex; align-items: baseline; gap: 10px; cursor: pointer; background: none; border: 0; padding: 0 }
-.brand h1 { font-size: 26px; line-height: 1 }
-.brand .yr { font-family: var(--f-display); font-size: 26px; color: var(--accent) }
-.search { position: relative; flex: 1 1 260px; min-width: 0 }
-.search input { width: 100%; padding: 10px 12px 10px 36px; border-radius: 999px; border: 1px solid var(--line); background: var(--sunk); color: var(--ink); font: inherit }
+.top-in { max-width: 1240px; margin: 0 auto; padding: 8px 16px; display: flex; gap: 8px 14px; align-items: center; flex-wrap: wrap }
+.brand { display: flex; align-items: baseline; gap: 8px; cursor: pointer; background: none; border: 0; padding: 0; color: var(--ink); text-decoration: none }
+.brand h1 { font-size: 24px; line-height: 1 }
+.brand .yr { font-family: var(--f-display); font-size: 24px; color: var(--accent); font-weight: 700 }
+.fresh { order: 3; font-size: 12.5px; color: var(--muted); white-space: nowrap; display: inline-flex; align-items: center; gap: 6px }
+.fresh::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--win) }
+.fresh.stale { color: var(--live); font-weight: 600 } .fresh.stale::before { background: var(--live) }
+.fresh.done::before { background: var(--muted) }
+.search { position: relative; flex: 1 1 260px; min-width: 0; order: 2 }
+@media (max-width: 640px) { .fresh { order: 1; margin-left: auto } .search { order: 3; flex-basis: 100% } }
+.search input { width: 100%; padding: 9px 12px 9px 36px; border-radius: 999px; border: 1px solid var(--line); background: var(--sunk); color: var(--ink); font: inherit }
 .search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted) }
-.sugg { position: absolute; left: 0; right: 0; top: calc(100% + 6px); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: 0 12px 32px rgb(0 0 0 / .16); max-height: 60vh; overflow: auto; z-index: 30 }
-.sugg button { display: flex; width: 100%; justify-content: space-between; gap: 12px; padding: 9px 14px; border: 0; background: none; text-align: left; cursor: pointer }
-.sugg button:hover, .sugg button.on { background: var(--accent-soft) }
+.sugg { position: absolute; left: 0; right: 0; top: calc(100% + 6px); background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: 0 12px 32px rgb(0 0 0 / .16); max-height: 60vh; overflow: auto; z-index: 30; padding: 0; margin: 0; list-style: none }
+.sugg [role=option] { display: flex; width: 100%; justify-content: space-between; gap: 12px; padding: 10px 14px; cursor: pointer }
+.sugg [role=option]:hover, .sugg [aria-selected=true] { background: var(--accent-soft) }
 .sugg .empty { padding: 12px 14px; color: var(--muted) }
+.update-bar { background: var(--accent); color: var(--accent-ink); text-align: center; padding: 8px 16px; font-weight: 600 }
+.update-bar button { background: var(--accent-ink); color: var(--accent); border: 0; border-radius: 999px; padding: 3px 12px; margin-left: 8px; font-weight: 700; cursor: pointer }
 
-/* division strip */
+/* nav strip (not sticky, so phones keep their screen) */
 .strip { max-width: 1240px; margin: 0 auto; padding: 10px 16px 0; display: flex; flex-direction: column; gap: 6px }
-.strip-row { display: flex; gap: 6px; align-items: center; overflow-x: auto; padding-bottom: 4px; scrollbar-width: thin }
+.strip-row { display: flex; gap: 6px; align-items: center; overflow-x: auto; padding: 3px 2px 4px; scrollbar-width: thin }
 .strip-row .label { min-width: 46px }
-.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 12px; white-space: nowrap; cursor: pointer; font-weight: 600; font-size: 14px }
+.chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 13px; white-space: nowrap; cursor: pointer; font-weight: 600; font-size: 14px; color: var(--ink); text-decoration: none; outline-offset: -3px }
 .chip:hover { border-color: var(--accent) }
 .chip.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent) }
 
-main { max-width: 1240px; margin: 0 auto; padding: 18px 16px 48px; display: flex; flex-direction: column; gap: 18px }
+main { max-width: 1240px; margin: 0 auto; padding: 16px 16px 48px; display: flex; flex-direction: column; gap: 18px }
 .panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px }
 .grid { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)) }
 .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap }
 .spread { display: flex; justify-content: space-between; gap: 12px; align-items: baseline; flex-wrap: wrap }
+.tag { display: inline-block; font-size: 10.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; padding: 1px 6px; border-radius: 4px; background: var(--sunk); color: var(--muted); border: 1px solid var(--line); vertical-align: 1px; margin-left: 4px }
+.unofficial { font-size: 13.5px; color: var(--muted) }
 
 /* overview */
 .hero { display: grid; gap: 16px; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) }
@@ -69,16 +81,17 @@ main { max-width: 1240px; margin: 0 auto; padding: 18px 16px 48px; display: flex
 .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin-top: 14px }
 .fact b { display: block; font-family: var(--f-display); font-size: 26px; line-height: 1.1 }
 .notice { border-left: 3px solid var(--live); background: var(--live-soft); padding: 10px 12px; border-radius: 0 8px 8px 0; font-size: 14px }
+.notice.info { border-left-color: var(--accent); background: var(--accent-soft) }
 .links { display: flex; flex-direction: column; gap: 6px; font-size: 14px }
-.divcard { display: flex; flex-direction: column; gap: 8px; text-align: left; cursor: pointer; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px }
+.divcard { display: flex; flex-direction: column; gap: 8px; text-align: left; cursor: pointer; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px; color: var(--ink); text-decoration: none }
 .divcard:hover { border-color: var(--accent) }
 .divcard h3 { font-size: 22px }
 .bar { height: 6px; background: var(--sunk); border-radius: 99px; overflow: hidden }
 .bar i { display: block; height: 100%; background: var(--win) }
 
 /* tabs */
-.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto }
-.tab { border: 0; background: none; padding: 9px 12px; cursor: pointer; font-family: var(--f-display); font-size: 18px; font-weight: 600; color: var(--muted); border-bottom: 3px solid transparent; white-space: nowrap; display: flex; gap: 7px; align-items: center }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); overflow-x: auto; padding-top: 2px }
+.tab { border: 0; background: none; padding: 9px 12px; cursor: pointer; font-family: var(--f-display); font-size: 18px; font-weight: 600; color: var(--muted); border-bottom: 3px solid transparent; white-space: nowrap; display: flex; gap: 7px; align-items: center; text-decoration: none; outline-offset: -3px }
 .tab.on { color: var(--ink); border-bottom-color: var(--accent) }
 .tier { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none }
 .t-gold { background: var(--gold) } .t-silver { background: var(--silver) } .t-bronze { background: var(--bronze) }
@@ -87,215 +100,456 @@ main { max-width: 1240px; margin: 0 auto; padding: 18px 16px 48px; display: flex
 /* pool cards */
 .pool h3 { font-size: 22px }
 table { width: 100%; border-collapse: collapse; font-size: 14px }
+caption { text-align: left; font-size: 12px; color: var(--muted); padding-bottom: 4px }
 th { text-align: left; font-weight: 600; color: var(--muted); font-size: 11.5px; text-transform: uppercase; letter-spacing: .06em; padding: 6px 6px; border-bottom: 1px solid var(--line) }
 td { padding: 6px; border-bottom: 1px solid var(--line); vertical-align: top }
 tr:last-child td { border-bottom: 0 }
 td.r, th.r { text-align: right }
-.tlink { background: none; border: 0; padding: 0; cursor: pointer; text-align: left; font-weight: 600; color: var(--ink) }
+.tlink { background: none; border: 0; padding: 0; cursor: pointer; text-align: left; font-weight: 600; color: var(--ink); text-decoration: none; outline-offset: 1px }
 .tlink:hover { color: var(--accent); text-decoration: underline }
+.tlink.w, .court .tlink.w { font-weight: 800 }
 .adv { font-size: 13px; color: var(--muted) }
 .sched { display: flex; flex-direction: column; gap: 6px; margin-top: 10px }
-.m { display: grid; grid-template-columns: 62px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 7px 8px; border-radius: 8px; background: var(--sunk); font-size: 14px }
-.m .when { color: var(--muted); font-size: 12.5px; line-height: 1.2 }
+.m { display: grid; grid-template-columns: 66px minmax(0, 1fr) auto; gap: 8px; align-items: center; padding: 7px 8px; border-radius: 8px; background: var(--sunk); font-size: 14px }
+.m .when { color: var(--muted); font-size: 12.5px; line-height: 1.25 }
 .m .vs { display: flex; flex-direction: column; min-width: 0 }
-.m .vs .tlink { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500 }
-.m .vs .tlink.w { font-weight: 700 }
+.m .vs > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.m .vs .tlink { font-weight: 500 }
+.m .vs .tlink.w { font-weight: 800 }
 .sets { font-variant-numeric: tabular-nums; font-size: 13px; text-align: right; white-space: nowrap }
 .pill { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 99px; white-space: nowrap }
 .p-final { background: var(--win-soft); color: var(--win) }
 .p-live { background: var(--live-soft); color: var(--live) }
 .p-upcoming { background: var(--sunk); color: var(--muted); border: 1px solid var(--line) }
 
-/* bracket canvas */
+/* bracket */
 .bwrap { overflow-x: auto; padding-bottom: 6px }
 .bcanvas { position: relative }
-.bm { position: absolute; width: 228px; background: var(--surface); border: 1px solid var(--line); border-radius: 9px; font-size: 13.5px; overflow: hidden }
-.bm.hl { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft) }
+.bm { width: 232px; background: var(--surface); border: 1px solid var(--line); border-radius: 9px; font-size: 13.5px; overflow: hidden }
+.bcanvas .bm { position: absolute }
+.bm.hl { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft) }
 .bm .hd { display: flex; justify-content: space-between; gap: 6px; padding: 5px 8px; background: var(--sunk); font-size: 12px; color: var(--muted) }
-.bm .hd b { color: var(--ink); font-weight: 600 }
-.slot { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 6px; padding: 5px 8px; align-items: center; border-top: 1px solid var(--line) }
+.bm .hd b { color: var(--ink); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
+.slot { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 0 6px; padding: 5px 8px; align-items: center; border-top: 1px solid var(--line) }
 .slot .sd { font-size: 11px; color: var(--muted); font-variant-numeric: tabular-nums }
 .slot .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap }
 .slot .nm .tlink { font-weight: 500 }
-.slot.w .nm .tlink { font-weight: 700 }
+.slot.w .nm .tlink { font-weight: 800 }
 .slot.w { background: var(--win-soft) }
 .slot .tbd { color: var(--muted); font-style: italic }
-.slot .bsc { grid-column: 2 / -1; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--win); font-weight: 600; margin-top: -3px }
-.bm .ft { padding: 4px 8px; font-size: 11.5px; color: var(--muted); border-top: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis }
-.btitle { display: flex; align-items: center; gap: 8px; margin: 4px 0 10px }
+.slot .bsc { grid-column: 2 / -1; font-size: 12px; font-variant-numeric: tabular-nums; color: var(--win); font-weight: 600 }
+.slot .bsc.live { color: var(--live) }
+.bm .ft { padding: 4px 8px; font-size: 11.5px; color: var(--muted); border-top: 1px solid var(--line) }
+.bm .ft.live { color: var(--live); font-weight: 700 }
+.btitle { display: flex; align-items: center; gap: 8px; margin: 4px 0 10px; flex-wrap: wrap }
 .btitle h3 { font-size: 22px }
+.blist { display: flex; flex-direction: column; gap: 14px }
+.blist .slotgrp { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)) }
+.blist .bm { width: auto }
 .results { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px }
 .results .panel { padding: 10px 12px; min-width: 220px; flex: 1 1 220px }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden }
+.seg button, .seg a { border: 0; background: var(--surface); padding: 6px 14px; cursor: pointer; font-weight: 600; color: var(--ink); text-decoration: none; outline-offset: -3px }
+.seg .on { background: var(--accent); color: var(--accent-ink) }
+.places { display: grid; gap: 6px 18px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)) }
+.places div { display: flex; gap: 8px; align-items: baseline }
+.places .pl { font-weight: 700; min-width: 0 }
 
 /* team view */
 .tv-head h2 { font-size: clamp(30px, 5vw, 42px); line-height: 1.05 }
-.next { border: 2px solid var(--accent); border-radius: var(--r); padding: 14px 16px; background: var(--accent-soft) }
-.next h3 { font-size: 24px }
+.status { border: 2px solid var(--accent); border-radius: var(--r); padding: 14px 16px; background: var(--accent-soft); display: flex; flex-direction: column; gap: 4px }
+.status.live { border-color: var(--live); background: var(--live-soft) }
+.status.done { border-color: var(--win); background: var(--win-soft) }
+.status h3 { font-size: 24px }
+.status .big { font-family: var(--f-display); font-size: 26px; font-weight: 700; color: var(--live) }
 .path { display: flex; flex-direction: column; gap: 8px }
-.step { display: grid; grid-template-columns: 110px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface) }
-@media (max-width: 560px) { .step { grid-template-columns: 1fr; gap: 4px } .m { grid-template-columns: 54px minmax(0,1fr) auto } }
+.step { display: grid; grid-template-columns: 118px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--surface) }
+.step.is-live { border-color: var(--live) }
+@media (max-width: 560px) { .step { grid-template-columns: 1fr; gap: 4px } .m { grid-template-columns: 58px minmax(0,1fr) auto } }
 .step .when b { display: block }
 .res-w { color: var(--win); font-weight: 700 } .res-l { color: var(--live); font-weight: 700 }
+.btn { display: inline-flex; gap: 6px; align-items: center; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 13px; font-weight: 600; cursor: pointer; white-space: nowrap; color: var(--ink); text-decoration: none }
+.btn:hover { border-color: var(--accent); color: var(--accent) }
+.btn.on { background: var(--accent); color: var(--accent-ink); border-color: var(--accent) }
+.conflict { color: var(--live); font-weight: 700; font-size: 12.5px }
 
 /* courts */
 .courts { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr)) }
 .court h3 { font-size: 22px; margin-bottom: 8px }
-.cm { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); font-size: 13.5px }
+.cm { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 8px; padding: 7px 0; border-top: 1px solid var(--line); font-size: 13.5px }
 .cm:first-of-type { border-top: 0 }
+.cm.is-live { background: var(--live-soft); margin: 0 -8px; padding: 7px 8px; border-radius: 6px }
 .foot { font-size: 13px; color: var(--muted); display: flex; flex-direction: column; gap: 4px }
-.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden }
-.seg button { border: 0; background: var(--surface); padding: 6px 14px; cursor: pointer; font-weight: 600 }
-.seg button.on { background: var(--accent); color: var(--accent-ink) }
-.share { display: inline-flex; gap: 6px; align-items: center; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 13px; font-weight: 600; cursor: pointer; white-space: nowrap }
-.share:hover { border-color: var(--accent); color: var(--accent) }
-#toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; z-index: 50; font-weight: 600; max-width: calc(100% - 32px); overflow-wrap: anywhere; text-align: center; box-shadow: 0 8px 24px rgb(0 0 0 / .25) }
-@media (prefers-reduced-motion: no-preference) { .chip, .divcard, .tab { transition: border-color .15s, background .15s, color .15s } }
+select { font: inherit; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink) }
+
+/* help */
+.help dl { display: grid; grid-template-columns: minmax(110px, max-content) minmax(0, 1fr); gap: 8px 16px; margin: 0 }
+.help dt { font-weight: 700 } .help dd { margin: 0 }
+.help p, .help li { max-width: 72ch }
+@media (max-width: 560px) { .help dl { grid-template-columns: 1fr } .help dd { margin-bottom: 6px } }
+
+/* share box + toast */
+#toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; z-index: 50; font-weight: 600; max-width: calc(100% - 32px); text-align: center; box-shadow: 0 8px 24px rgb(0 0 0 / .25) }
+#sharebox { position: fixed; inset: auto 16px calc(16px + env(safe-area-inset-bottom, 0px)); max-width: 560px; margin: 0 auto; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); box-shadow: 0 12px 40px rgb(0 0 0 / .3); padding: 14px; z-index: 60; display: flex; flex-direction: column; gap: 10px }
+#sharebox input { width: 100%; font: inherit; padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--sunk); color: var(--ink) }
+@media (prefers-reduced-motion: no-preference) { .chip, .divcard, .tab, .btn { transition: border-color .15s, background .15s, color .15s } }
+@media print {
+  .top, .strip, .btn, .share, .tabs, #toast, #sharebox, .update-bar, .seg { display: none !important }
+  body { background: #fff; color: #000 } .panel, .step, .bm { break-inside: avoid; box-shadow: none }
+  .bwrap { overflow: visible }
+}
 </style>
 
 <header class="top">
   <div class="top-in">
-    <button class="brand" id="brand" aria-label="Overview"><h1>NCHVC Nationals</h1><span class="yr">2026</span></button>
+    <a class="brand" id="brand" href="/" data-go="home" aria-label="NCHVC Nationals 2026, overview"><h1>NCHVC Nationals</h1><span class="yr">2026</span></a>
+    <span class="fresh" id="fresh" role="status" aria-live="polite"></span>
     <div class="search">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" type="search" placeholder="Find a team, e.g. “Patriots” or “(TX)”" autocomplete="off" aria-label="Search teams">
-      <div class="sugg" id="sugg" hidden></div>
+      <input id="q" type="search" placeholder="Find a team, e.g. “Patriots” or “(TX)”" autocomplete="off" aria-label="Search teams" role="combobox" aria-expanded="false" aria-controls="sugg" aria-autocomplete="list">
+      <ul class="sugg" id="sugg" role="listbox" aria-label="Matching teams" hidden></ul>
     </div>
   </div>
-  <nav class="strip" id="strip" aria-label="Divisions"></nav>
 </header>
-<!--BANNER--><main id="main"></main>
+<div id="updatebar"></div>
+<nav class="strip" id="strip" aria-label="Divisions and views"></nav>
+<!--BANNER--><main id="main" tabindex="-1"></main>
 <div id="toast" role="status" aria-live="polite" hidden></div>
+<div id="sharebox" role="dialog" aria-label="Copy this link" hidden></div>
 
 <script id="nchvc-data" type="application/json">__DATA__</script>
 <script>
 (() => {
 let D = JSON.parse(document.getElementById('nchvc-data').textContent);  // null on the hosted site -> loaded from data.json
+const BUILD = '__BUILD__';
+const LIVE = !D;  // hosted site: fetch data.json and poll for updates
 const $ = (s, el = document) => el.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const court = c => String(c || '').replace(/^AHSP Bluhawk\s*/i, 'Ct ').trim();
 const seedTxt = s => String(s || '').replace(/\.0$/, '');
+const seedKey = s => seedTxt(s).toLowerCase().replace(/\s+/g, '');
 const DAYS = { Thursday: 0, Thu: 0, Thur: 0, THU: 0, Friday: 1, FRI: 1, Fri: 1, Saturday: 2, SAT: 2, Sat: 2 };
-const DAYNAME = ['Thu', 'Fri', 'Sat'];
+const DAYNAME = ['Thu', 'Fri', 'Sat'], DAYLONG = ['Thursday', 'Friday', 'Saturday'];
 const store = { get(k) { try { return localStorage.getItem(k) } catch { return null } }, set(k, v) { try { localStorage.setItem(k, v) } catch {} } };
+const clock = mins => { if (mins == null) return ''; const h = Math.floor(mins / 60) % 24, mm = Math.round(mins % 60); return `${h % 12 || 12}:${String(mm).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}` };
+const ordinal = n => n + (['th', 'st', 'nd', 'rd'][(n % 100 - 20) % 10] || ['th', 'st', 'nd', 'rd'][n % 100] || 'th');
+const TIERNAME = { gold: 'Gold', silver: 'Silver', bronze: 'Bronze', copper: 'Copper', iron: 'Iron', pool: 'Pool' };
+const isPlaceholder = n => /^Team \d+$/.test(n || '');
+const HOME = 'Home team: provides a line judge and a bookkeeper.';
+const AWAY = 'Visiting team: provides a line judge, a scoreboard operator and a libero tracker.';
 
 // ---------- model ----------
-let sheets = [], poolSheets = [], divisions = [], all = [], teamIdx = new Map(), teams = [];
-function buildModel() {
-sheets = D.sheets;
-poolSheets = sheets.filter(s => s.kind === 'pools');
-divisions = [];
-all = [];   // every match, normalized
-teamIdx = new Map(); // key -> {name, age, divs:Set}
-for (const s of sheets) {
-  if (s.kind === 'pools') continue;
-  const dnum = s.divs[0];
-  let pools = s.pools, shared = null;
-  if (!pools.length) {
-    shared = poolSheets.find(p => p.age === s.age && p.divs.includes(dnum));
-    pools = shared ? shared.pools : [];
-  }
-  const short = dnum ? `${s.age} D${dnum}` : s.age;
-  divisions.push({ id: slug(short), short, sheet: s, gender: s.gender, age: s.age, pools, shared });
-}
-
-// flatten matches with a timeline key
+let sheets = [], poolSheets = [], divisions = [], all = [], teamIdx = new Map(), teams = [], sourceOf = new Map();
 function tkey(day, time) {
   let d = DAYS[day] ?? 0;
   let t = String(time || '');
-  const dm = t.match(/^(THU|FRI|SAT)\s+/i);
+  const dm = t.match(/^(THU|FRI|SAT)[a-z]*[\s\-:.,]*/i);  // "FRI 8:00 AM" (also older "FRI- 8:00 AM", "SAT1:00 PM")
   if (dm) { d = DAYS[dm[1].toUpperCase()]; t = t.slice(dm[0].length) }
-  const m = t.match(/(\d{1,2}):(\d{2})\s*(AM|PM)?/i);
+  const m = t.match(/(\d{1,2}):(\d{2})\s*([AP])?/i);
   let mins = null;
-  if (m) { mins = (+m[1] % 12) * 60 + +m[2] + (/pm/i.test(m[3] || '') ? 720 : 0) }
-  return { d, mins, t };
+  if (m) { mins = (+m[1] % 12) * 60 + +m[2] + (/p/i.test(m[3] || '') ? 720 : 0) }
+  return { d, mins, t: mins == null ? t : clock(mins) };
 }
-function addTeam(name, div) {
-  if (!name) return;
-  const key = slug(div.age + ' ' + name);
-  if (!teamIdx.has(key)) teamIdx.set(key, { key, name, age: div.age, divs: new Set(), gender: div.gender });
-  teamIdx.get(key).divs.add(div.id);
-}
-const seenPool = new Set();
-for (const dv of divisions) {
-  const srcId = dv.shared ? dv.shared.id : dv.sheet.id;
-  for (const p of dv.pools) {
-    p.teams.forEach(t => addTeam(t.team, dv));
-    const pk = srcId + p.name;
-    if (seenPool.has(pk)) continue; seenPool.add(pk);
-    let last = null;
-    for (const m of p.matches) {
-      let k = tkey(p.name.startsWith('Iron') ? 'Friday' : 'Thursday', m.time);
-      if (k.mins == null && last) k = { ...last, mins: last.mins + 0.5 * (m.n || 1), rolling: true, start: last.t };
-      else last = k;
-      all.push({ kind: 'pool', div: dv, pool: p, court: m.court, day: k.d, mins: k.mins, timeLabel: k.rolling ? 'Rolling' : (k.t || m.time), rolling: !!k.rolling, start: k.start || '', order: m.n, ofN: p.matches.length, divs: [dv],
-        a: m.a, b: m.b, sets: m.sets, status: m.status, winner: m.winner, name: `${p.name} · Match ${m.n}`, bestOf: p.bestOf });
-    }
-  }
-  for (const b of dv.sheet.brackets) for (const cl of b.clusters) for (const m of cl.matches) {
-    const k = tkey(m.day, m.time);
-    m._tab = b.tab;
-    [m.top.team, m.bottom.team].forEach(n => addTeam(n, dv));
-    all.push({ kind: 'bracket', div: dv, tab: b.tab, cl, ref: m, court: m.court, day: k.d, mins: k.mins, timeLabel: m.time,
-      a: m.top.team, b: m.bottom.team, sa: m.top.seed, sb: m.bottom.seed, sets: m.sets, status: m.status, winner: m.winner, name: m.name, bestOf: m.bestOf, loserTo: m.loserTo });
-  }
-}
-all.sort((x, y) => x.day - y.day || (x.mins ?? 9999) - (y.mins ?? 9999));
-teams = [...teamIdx.values()].filter(t => !/^Team \d+$/.test(t.name));
-}
-const inDiv = (m, dv) => m.div === dv || (m.kind === 'pool' && dv.pools.includes(m.pool));
-const progress = dv => { const ms = all.filter(m => inDiv(m, dv)); return { done: ms.filter(m => m.status === 'final').length, tot: ms.length } };
-
 function tierOf(tab) {
-  const t = tab.toLowerCase();
-  if (t.includes('pool')) return 'pool';
-  for (const k of ['gold', 'silver', 'bronze', 'copper', 'iron']) if (t.includes(k)) return k;
+  const t = String(tab).toLowerCase();
+  if (t.includes('pool')) return t.includes('iron') ? 'iron' : 'pool';
   if (t.includes('gbss')) return 'gold';
+  for (const k of ['gold', 'silver', 'bronze', 'copper', 'iron']) if (t.includes(k)) return k;
   return 'pool';
 }
-const setsTxt = (sets, flip) => (sets || []).map(([a, b]) => flip ? `${b}-${a}` : `${a}-${b}`).join(', ');
+function tabLabel(tab) {
+  const t = tab.replace(/ Brackets?$/, '');
+  if (/^gbss$/i.test(t)) return 'Championship';
+  if (/^gold\s*&\s*silver$/i.test(t)) return 'Championship & Silver';
+  return t;
+}
+
+function buildModel() {
+  sheets = D.sheets;
+  poolSheets = sheets.filter(s => s.kind === 'pools');
+  divisions = []; all = []; teamIdx = new Map(); sourceOf = new Map();
+  for (const s of sheets) {
+    if (s.kind === 'pools') continue;
+    const dnum = s.divs[0];
+    let pools = s.pools, shared = null;
+    if (!pools.length) {
+      shared = poolSheets.find(p => p.age === s.age && p.divs.includes(dnum)) || poolSheets.find(p => p.age === s.age);
+      pools = shared ? shared.pools : [];
+    }
+    const short = dnum ? `${s.age} D${dnum}` : s.age;
+    divisions.push({ id: slug(short), short, sheet: s, gender: s.gender, age: s.age, dnum, pools, shared });
+  }
+  const addTeam = (name, div) => {
+    if (!name || isPlaceholder(name)) return;
+    const key = slug(div.age + ' ' + name);
+    if (!teamIdx.has(key)) teamIdx.set(key, { key, name, age: div.age, divs: new Set(), gender: div.gender });
+    teamIdx.get(key).divs.add(div.id);
+  };
+  const seenPool = new Set();
+  for (const dv of divisions) {
+    const srcId = dv.shared ? dv.shared.id : dv.sheet.id;
+    for (const p of dv.pools) {
+      p.teams.forEach(t => addTeam(t.team, dv));
+      const pk = srcId + p.name;
+      if (seenPool.has(pk)) continue; seenPool.add(pk);
+      let last = null;
+      for (const m of p.matches) {
+        let k = tkey(p.name.startsWith('Iron') ? 'Friday' : 'Thursday', m.time);
+        if (k.mins == null && last) k = { ...last, mins: last.mins + 0.5 * (m.n || 1), rolling: true, start: last.t };
+        else last = k;
+        all.push({ kind: 'pool', div: dv, pool: p, court: m.court, day: k.d, mins: k.mins, timeLabel: k.rolling ? 'Rolling' : k.t,
+          rolling: !!k.rolling, start: k.start || '', order: m.n, ofN: p.matches.length,
+          a: m.a, b: m.b, sets: m.sets || [], persp: m.a, status: m.status, winner: m.winner || null, name: `${p.name} · Match ${m.n}`, bestOf: p.bestOf });
+      }
+    }
+    for (const b of dv.sheet.brackets) for (const cl of b.clusters) for (const m of cl.matches) {
+      const k = tkey(m.day, m.time);
+      [m.top.team, m.bottom.team].forEach(n => addTeam(n, dv));
+      // live/final scores are written under one team, from that team's side
+      const persp = m.top.score ? m.top.team : m.bottom.score ? m.bottom.team : (m.winner || m.top.team);
+      all.push({ kind: 'bracket', div: dv, tab: b.tab, tabId: slug(b.tab), cl, ref: m, court: m.court, day: k.d, mins: k.mins, timeLabel: k.t,
+        a: m.top.team, b: m.bottom.team, sa: m.top.seed, sb: m.bottom.seed, sets: m.sets || [], persp, status: m.status, winner: m.winner || null,
+        advances: m.advances || '', noScore: !!m.noScore, name: m.name, bestOf: m.bestOf, loserTo: m.loserTo });
+    }
+  }
+  estimateRolling();
+  all.sort((x, y) => x.day - y.day || (x.mins ?? 9999) - (y.mins ?? 9999));
+  all.forEach((m, i) => { m.id = i });
+  teams = [...teamIdx.values()];
+  buildSources();
+}
+
+// Rolling pool matches: estimate a clock time from the pool's first start and the court's next timed start.
+function estimateRolling() {
+  const byCourt = new Map();
+  for (const m of all) if (m.kind === 'pool') { const k = m.day + '|' + m.court; if (!byCourt.has(k)) byCourt.set(k, []); byCourt.get(k).push(m) }
+  for (const list of byCourt.values()) {
+    const pools = [...new Set(list.map(m => m.pool))];
+    for (const p of pools) {
+      const ms = list.filter(m => m.pool === p).sort((a, b) => a.order - b.order);
+      const first = ms.find(m => !m.rolling && m.mins != null);
+      if (!first) continue;
+      const nextStart = list.filter(m => m.pool !== p && !m.rolling && m.mins != null && m.mins > first.mins).map(m => m.mins).sort((a, b) => a - b)[0];
+      const slot = nextStart ? Math.min(60, Math.max(40, (nextStart - first.mins) / ms.length)) : 50;
+      for (const m of ms) if (m.rolling) { m.est = first.mins + (m.order - first.order) * slot; m.mins = m.est }
+    }
+  }
+}
+
+// Advancement strings from the sheets ("Gold Ball Class 7A-2", "Division II-Class 3A #8", "Copper-8", "GBSS-8A",
+// "Silver-2", "Iron Pool B-2") -> the bracket slot (or Iron pool seed) they point to.
+const ROMAN = { I: '1', II: '2', III: '3', IV: '4', IIII: '4' };
+function resolveAdv(adv, ctx) {
+  if (!adv) return null;
+  const dm = adv.match(/Division\s+(IIII|III|II|IV|I)\b/i);
+  let dvs = ctx;
+  if (dm) { const n = ROMAN[dm[1].toUpperCase()]; const hit = divisions.filter(d => d.age === ctx[0].age && d.dnum === n); if (hit.length) dvs = hit }
+  let m;
+  if ((m = adv.match(/Iron\s+Pool\s+([A-Z])\s*-\s*(\d+)/i))) {
+    for (const dv of dvs) { const p = dv.pools.find(p => p.name.toLowerCase() === `iron pool ${m[1].toLowerCase()}`); if (p) return { dv, iron: p, seed: +m[2] } }
+    return null;
+  }
+  let want, tabTest;
+  if ((m = adv.match(/Class\s+(\d+A)[\s-]*#?\s*(\d+)/i))) { want = `${m[1]}#${m[2]}`.toLowerCase(); tabTest = t => /gold ball/i.test(t) }
+  else if ((m = adv.match(/^GBSS\s*-\s*(\d+A)/i))) { want = m[1].toLowerCase(); tabTest = t => /gbss|gold\s*&\s*silver/i.test(t) }
+  else if ((m = adv.match(/^(Copper|Bronze|Silver|Gold)\s*-\s*(\d+)/i))) { want = m[2]; const w = m[1].toLowerCase(); tabTest = t => t.toLowerCase().includes(w) && !(w === 'gold' && /gold ball/i.test(t)) }
+  else return null;
+  for (const dv of dvs) for (const b of dv.sheet.brackets) {
+    if (!tabTest(b.tab)) continue;
+    for (const cl of b.clusters) for (const r of cl.matches) for (const side of ['top', 'bottom'])
+      if (seedKey(r[side].seed) === want) return { dv, tab: b.tab, ref: r, side, match: all.find(x => x.ref === r) };
+  }
+  return null;
+}
+const poolCtx = dv => dv.shared ? divisions.filter(d => d.age === dv.age) : [dv];
+function buildSources() {
+  const put = (r, text) => { if (!r) return; const k = r.iron ? `${r.dv.id}|${r.iron.name}|${r.seed}` : `${r.dv.id}|${r.tab}|${seedKey(r.ref[r.side].seed)}`; if (!sourceOf.has(k)) sourceOf.set(k, text) };
+  const seenPools = new Set();
+  for (const dv of divisions) {
+    for (const p of dv.pools) {
+      if (seenPools.has(p)) continue; seenPools.add(p);
+      for (const s of p.standings) put(resolveAdv(s.adv, poolCtx(dv)), `${p.name} ${s.rank}`);
+    }
+    for (const b of dv.sheet.brackets) {
+      for (const res of b.results) res.rows.forEach((row, i) => put(resolveAdv(row.adv, [dv]), `${res.title.replace(/ Results$/, '')} ${i === 0 ? 'winner' : 'runner-up'}`));
+      for (const cl of b.clusters) for (const r of cl.matches) if (r.loserTo) put(resolveAdv(r.loserTo, [dv]), `Loser of ${shortName(r.name, dv)}`);
+    }
+  }
+}
+const slotSource = (dv, tab, seed) => sourceOf.get(`${dv.id}|${tab}|${seedKey(seed)}`) || '';
+const ironSource = (dv, pool, seed) => sourceOf.get(`${dv.id}|${pool.name}|${seed}`) || '';
+const shortName = (name, dv) => String(name).replace(new RegExp('^' + dv.age + '\\s*(D\\d\\s*)?', 'i'), '').replace(/\s*\(best of 5\)/i, '');
+
+const inDiv = (m, dv) => m.div === dv || (m.kind === 'pool' && dv.pools.includes(m.pool));
+const progress = dv => { const ms = all.filter(m => inDiv(m, dv)); return { done: ms.filter(m => m.status === 'final').length, tot: ms.length } };
+const aheadOnCourt = m => all.filter(x => x !== m && x.day === m.day && x.court === m.court && x.mins != null && m.mins != null && x.mins < m.mins && x.status !== 'final').length;
+
+// ---------- scores from a given team's side ----------
+const setsFor = (m, team) => (m.sets || []).map(([x, y]) => m.persp === team ? [x, y] : [y, x]);
+const setsTxt = sets => sets.map(([a, b]) => `${a}-${b}`).join(', ');
 const pill = st => `<span class="pill p-${st}">${st === 'upcoming' ? 'Upcoming' : st === 'live' ? 'In progress' : 'Final'}</span>`;
-const tlink = (name, age, cls = '') => name ? `<button class="tlink ${cls}" data-team="${esc(slug(age + ' ' + name))}">${esc(name)}</button>` : '<span class="tbd">TBD</span>';
-const when = m => m.rolling ? `${DAYNAME[m.day]} · after ${esc(m.start)} start` : `${DAYNAME[m.day]} ${esc(m.timeLabel || '')}`;
-const rollNote = m => m.rolling ? `Match ${m.order} of ${m.ofN} on this court. Rolling start: begins when the previous match ends (pool starts ${esc(m.start)}).` : '';
+function resultFor(m, team) {
+  if (m.status === 'live') return `${pill('live')}${m.sets.length ? ` <span class="sets">${esc(setsTxt(setsFor(m, team)))}</span>` : ''}`;
+  if (m.status !== 'final') return pill(m.status);
+  const sc = m.noScore ? '<span class="muted">(score not reported)</span>' : `<span class="sets">${esc(setsTxt(setsFor(m, team)))}</span>`;
+  const usa = m.advances ? `<div class="adv">${m.advances === team ? 'Advances anyway (Team USA rule)' : `${esc(m.advances)} advances (Team USA rule)`}</div>` : '';
+  if (!m.winner) return `<span class="muted" style="font-weight:700">Split</span> ${sc}`;
+  return `${m.winner === team ? '<span class="res-w">Won</span>' : '<span class="res-l">Lost</span>'} ${sc}${usa}`;
+}
+
+// ---------- placements (Saturday finals) ----------
+function placement(m, team) {
+  if (m.status !== 'final' || m.kind !== 'bracket' || !m.winner) return null;
+  const n = m.name.toUpperCase(), won = m.winner === team, tier = TIERNAME[tierOf(m.tab)] || '';
+  if (/UNDISPUTED|\bCHAMP\b/.test(n)) return { final: true, rank: won ? 1 : 2, tier: 'Undisputed', text: won ? 'Undisputed national champion' : 'Undisputed runner-up (2nd)' };
+  let k;
+  if ((k = n.match(/\b(SILVER|BRONZE|COPPER|IRON)\s+BALL\b/))) { const t = k[1][0] + k[1].slice(1).toLowerCase(); return { final: true, rank: won ? 1 : 2, tier: t, text: won ? `${t} Ball champion` : `${t} Ball runner-up` } }
+  if ((k = n.match(/\b(1|3|5|7)(ST|RD|TH)\b/))) { const r = +k[1] + (won ? 0 : 1); return { final: true, rank: r, tier, text: r === 1 && tier === 'Gold' ? 'Champion' : `${ordinal(r)} in ${tier}` } }
+  return null;
+}
+
+// ---------- links ----------
+const hrefFor = route => LIVE ? routeToPath(route) : '#' + route;
+const tlink = (name, age, cls = '') => name && !isPlaceholder(name)
+  ? `<a class="tlink ${cls}" href="${esc(hrefFor('t-' + slug(age + ' ' + name)))}" data-team="${esc(slug(age + ' ' + name))}">${esc(name)}</a>`
+  : `<span class="tbd">${esc(name || 'TBD')}</span>`;
+const when = m => m.rolling ? `${DAYNAME[m.day]} ≈${clock(m.est ?? m.mins)}` : `${DAYNAME[m.day]} ${esc(m.timeLabel || '')}`;
+const rollNote = m => m.rolling ? `Estimated time. Rolling start: match ${m.order} of ${m.ofN} in this pool begins when the previous match on the court ends (pool starts ${esc(m.start)}).` : '';
+const homeTag = (m, team) => m.a === team ? '<span class="tag" title="' + HOME + '">Home</span>' : m.b === team ? '<span class="tag" title="' + AWAY + '">Away</span>' : '';
 
 // ---------- chrome ----------
 const strip = $('#strip');
+const following = () => { try { return JSON.parse(store.get('nchvc.follow') || '[]') } catch { return [] } };
 function renderStrip(active) {
+  const f = following().filter(k => teamIdx.has(k)).length;
+  const chip = (route, label, on) => `<a class="chip ${on ? 'on' : ''}" href="${esc(hrefFor(route))}" data-go="${esc(route)}"${on ? ' aria-current="page"' : ''}>${label}</a>`;
   const rows = [['Girls', divisions.filter(d => d.gender === 'Girls')], ['Boys', divisions.filter(d => d.gender === 'Boys')]];
-  strip.innerHTML = rows.map(([g, ds]) => `<div class="strip-row"><span class="label">${g}</span>${ds.map(d => `<button class="chip ${active === d.id ? 'on' : ''}" data-go="d-${d.id}">${esc(d.short)}</button>`).join('')}${g === 'Girls' ? `<span style="flex:1"></span><button class="chip ${active === 'courts' ? 'on' : ''}" data-go="courts">By court</button>` : ''}</div>`).join('');
+  strip.innerHTML = `<div class="strip-row">${chip('courts', 'By court', active === 'courts')}${chip('mine', `★ My teams${f ? ` (${f})` : ''}`, active === 'mine')}${chip('help', 'How it works', active === 'help')}</div>` +
+    rows.filter(([, ds]) => ds.length).map(([g, ds]) => `<div class="strip-row"><span class="label">${g}</span>${ds.map(d => chip('d-' + d.id, esc(d.short), active === d.id)).join('')}</div>`).join('');
+  const on = strip.querySelector('.chip.on');
+  if (on) { const row = on.parentElement; row.scrollLeft = on.offsetLeft - row.clientWidth / 2 + on.offsetWidth / 2 }
+}
+
+// freshness indicator in the top bar
+let pollFails = 0;
+const startDate = () => D.startDate || '2026-10-15';
+function expectedGapMin(now) {
+  const s = Date.parse(startDate() + 'T12:30:00Z');   // 7:30 AM Central on day 1
+  const e = s + (2 * 24 + 17.5) * 3600e3;             // ~1 AM Central after day 3
+  return now < s ? 75 : now < e ? 20 : 26 * 60;
+}
+const ago = mins => mins < 1.5 ? 'just now' : mins < 90 ? `${Math.round(mins)} min ago` : mins < 36 * 60 ? `${Math.round(mins / 60)} h ago` : `${Math.round(mins / 1440)} days ago`;
+function renderFresh() {
+  const el = $('#fresh'); if (!D) { el.textContent = ''; return }
+  const now = Date.now(), age = (now - new Date(D.generated)) / 60000;
+  const done = all.length && all.every(m => m.status === 'final');
+  const stale = LIVE && !done && (age > expectedGapMin(now) || pollFails >= 3);
+  el.className = 'fresh' + (stale ? ' stale' : done ? ' done' : '');
+  el.textContent = done ? `Final results · checked ${ago(age)}` : stale ? `Updates delayed · ${ago(age)}` : `Updated ${ago(age)}`;
+  el.title = stale ? 'Scores may be behind. Check the official bracket sheets.' : `Pulled from the official sheets ${new Date(D.generated).toLocaleString()}`;
 }
 
 // ---------- sharing & titles ----------
 const BASE_TITLE = document.title;
 const CAN_SHARE = (() => { try { return window.top === window && /^https?:$/.test(location.protocol) } catch { return false } })();
 const setTitle = s => { document.title = s ? `${s} · ${BASE_TITLE}` : BASE_TITLE };
-const shareBtn = label => CAN_SHARE ? `<button class="share" data-share="${esc(label)}" aria-label="Share a link to this page"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg>Share</button>` : '';
+const shareBtn = label => CAN_SHARE ? `<button class="btn share" data-share="${esc(label)}" aria-label="Share a link to this page"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg>Share</button>` : '';
 let toastTimer;
 function toast(msg) { const el = $('#toast'); el.textContent = msg; el.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.hidden = true }, 3500) }
+function shareBox(url) {
+  const box = $('#sharebox');
+  box.innerHTML = `<label class="label" for="shareurl">Copy this link</label><input id="shareurl" readonly value="${esc(url)}"><div class="row"><button class="btn" id="sharecopy">Copy</button><button class="btn" id="shareclose">Close</button></div>`;
+  box.hidden = false;
+  const inp = $('#shareurl'); inp.focus(); inp.select();
+  $('#sharecopy').onclick = async () => { inp.select(); try { await navigator.clipboard.writeText(url); toast('Link copied'); box.hidden = true } catch { toast('Press and hold the link to copy it') } };
+  $('#shareclose').onclick = () => { box.hidden = true };
+}
 async function share(label) {
   const url = urlFor(current);
   if (navigator.share && matchMedia('(pointer: coarse)').matches) {  // phones: native share sheet
     try { await navigator.share({ title: `${label} · ${BASE_TITLE}`, url }); return } catch (e) { if (e.name === 'AbortError') return }
   }
-  try { await navigator.clipboard.writeText(url); toast('Link copied') }
-  catch { toast(url) }  // clipboard blocked: show the link so it can be selected
+  try { await navigator.clipboard.writeText(url); toast('Link copied') } catch { shareBox(url) }
 }
 
 // ---------- views ----------
 const main = $('#main');
 function freshness() {
   const age = (Date.now() - new Date(D.generated)) / 60000;
-  const stale = D.stale || [];
   const out = [];
-  if (LIVE && age > 20) out.push(`Scores were last pulled ${Math.round(age)} minutes ago. Updates may be delayed, so check the official bracket sheets.`);
-  if (stale.length) out.push(`Couldn't reach Google for ${stale.join(', ')} on the last update, so those may be behind.`);
+  const done = all.length && all.every(m => m.status === 'final');
+  if (LIVE && !done && age > expectedGapMin(Date.now())) out.push(`Scores were last pulled ${ago(age)}. Updates may be delayed, so check the official bracket sheets.`);
+  if ((D.stale || []).length) out.push(`Couldn't read ${D.stale.join(', ')} on the last update, so those may be behind.`);
   return out.map(x => `<div class="notice">${esc(x)}</div>`).join('');
 }
 function footer() {
   const t = new Date(D.generated);
-  return `${freshness()}<div class="foot"><span>Pulled from the official NCHVC bracket sheets ${t.toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}. ${LIVE ? 'During the tournament, scores are pulled from the official sheets every 5 minutes, and this page updates itself.' : 'Scores appear here after the next refresh.'}</span>
-  <span>Always confirm game times on the <a href="${esc(D.source)}" target="_blank" rel="noopener">official bracket index</a> before heading to a court.</span></div>`;
+  const done = all.length && all.every(m => m.status === 'final');
+  return `${freshness()}<div class="foot"><span><b>Unofficial viewer.</b> Copied from the official NCHVC bracket sheets ${t.toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}. ${done ? 'All matches are final.' : LIVE ? 'During the tournament, scores are pulled from the official sheets every 5 minutes, and this page updates itself.' : 'Scores appear here after the next refresh.'} All times are Central.</span>
+  <span>If anything differs, the official sheet wins. Confirm game times on the <a href="${esc(D.source)}" target="_blank" rel="noopener">official bracket index</a>.</span></div>`;
+}
+const h2 = (text, extra = '') => `<h2 tabindex="-1" ${extra}>${text}</h2>`;
+
+function statusOf(t) {
+  const ms = teamMatches(t);
+  const live = ms.find(m => m.status === 'live');
+  if (live) return { state: 'live', m: live };
+  const next = ms.find(m => m.status === 'upcoming');
+  if (next) return { state: 'next', m: next };
+  const last = [...ms].reverse().find(m => m.status === 'final');
+  const pl = last && placement(last, t.name);
+  if (pl) return { state: 'done', text: `Finished: ${pl.text}`, m: last };
+  // pool done but bracket not filled in yet
+  for (const dv of [...t.divs].map(id => divisions.find(d => d.id === id)))
+    for (const p of dv.pools) {
+      const row = p.standings.find(s => s.team === t.name);
+      if (row && !p.name.startsWith('Iron') && !ms.some(m => m.kind === 'bracket' || m.pool?.name.startsWith('Iron'))) {
+        const r = resolveAdv(row.adv, poolCtx(dv));
+        return { state: 'pending', text: `Finished ${row.rank} in ${p.name} → ${row.adv}`, slot: r };
+      }
+    }
+  if (last && last.kind === 'bracket' && last.winner) {
+    const moved = last.advances || last.winner;  // under the Team USA rule the winner may not be the team that advances
+    const how = last.winner === t.name ? `Won ${shortName(last.name, last.div)}` : `Lost ${shortName(last.name, last.div)}`;
+    if (moved === t.name) return { state: 'pending', text: `${how}${last.advances ? ' and advances (Team USA rule)' : ''}. Waiting for the bracket to update.` };
+    if (last.loserTo) return { state: 'pending', text: `${how}${last.advances ? `, but ${last.advances} advances (Team USA rule)` : ''} → plays on in ${last.loserTo}`, slot: resolveAdv(last.loserTo, [last.div]) };
+    return { state: 'pending', text: `${how}${last.advances ? `, but ${last.advances} advances (Team USA rule)` : ''}. Waiting for the bracket to update.` };
+  }
+  return { state: 'none' };
+}
+function slotLine(r) {
+  if (!r) return '';
+  if (r.iron) { const ms = all.filter(m => m.pool === r.iron && (m.a === `Team ${r.seed}` || m.b === `Team ${r.seed}`)); const f = ms[0]; return f ? `${r.iron.name}, first match ${when(f)} · ${esc(court(f.court))}` : esc(r.iron.name) }
+  const m = r.match; if (!m) return '';
+  const oppSide = r.side === 'top' ? 'bottom' : 'top';
+  const opp = r.ref[oppSide].team || slotSource(r.dv, r.tab, r.ref[oppSide].seed) || seedTxt(r.ref[oppSide].seed);
+  return `${when(m)} · ${esc(court(m.court))} · ${esc(shortName(m.name, m.div))} vs ${esc(opp)}`;
+}
+function statusCard(t, compact = false) {
+  const s = statusOf(t), m = s.m;
+  const opp = m && (m.a === t.name ? m.b : m.a);
+  const oppTxt = m ? (opp ? tlink(opp, t.age) : `<span class="muted">${esc(slotSource(m.div, m.tab, m.a === t.name ? m.sb : m.sa) || seedTxt(m.a === t.name ? m.sb : m.sa) || 'TBD')}</span>`) : '';
+  if (s.state === 'live') {
+    const sets = setsFor(m, t.name);
+    return `<div class="status live"><span class="label">Playing now · ${esc(court(m.court))}</span>
+      <div class="big num">${sets.length ? `Sets so far: ${esc(setsTxt(sets))}` : 'In progress'}</div>
+      <div>vs ${oppTxt} <span class="muted">· ${esc(m.name)}</span></div></div>`;
+  }
+  if (s.state === 'next') {
+    const ahead = aheadOnCourt(m);
+    const loseLine = m.kind === 'bracket' && m.loserTo ? `<div class="muted">Win → keeps going in this bracket · Lose → ${esc(m.loserTo)}${slotLine(resolveAdv(m.loserTo, [m.div])) ? ` (${slotLine(resolveAdv(m.loserTo, [m.div]))})` : ''}</div>` : '';
+    return `<div class="status"><span class="label">Next match</span>
+      <h3>${when(m)} · ${esc(court(m.court))}</h3>
+      ${m.rolling ? `<div class="muted">${rollNote(m)}</div>` : ''}
+      ${ahead && !compact ? `<div class="muted">${ahead} match${ahead === 1 ? '' : 'es'} still ahead of it on this court.</div>` : ''}
+      <div>vs ${oppTxt} ${homeTag(m, t.name)} <span class="muted">· ${esc(m.name)}</span></div>
+      ${compact ? '' : `<div class="muted" style="font-size:13px">${m.a === t.name ? HOME : AWAY}</div>`}
+      ${compact ? '' : loseLine}</div>`;
+  }
+  if (s.state === 'done') return `<div class="status done"><span class="label">Tournament finished</span><h3>${esc(s.text.replace(/^Finished: /, ''))}</h3></div>`;
+  if (s.state === 'pending') return `<div class="status"><span class="label">What's next</span><div><b>${esc(s.text)}</b></div>${slotLine(s.slot) ? `<div>${slotLine(s.slot)}</div>` : ''}<div class="muted" style="font-size:13px">The official bracket fills in this spot after results are entered.</div></div>`;
+  return `<div class="status"><span class="label">What's next</span><div class="muted">No upcoming matches listed yet. Bracket spots fill in as results come in.</div></div>`;
 }
 
 function viewHome() {
@@ -304,40 +558,45 @@ function viewHome() {
   const notices = [...new Set(sheets.flatMap(s => s.notices || []))].filter(n => /DRAFT|change/i.test(n));
   const venue = Object.keys(info).find(k => k.includes('Bluhawk')) || '';
   const linkKeys = Object.keys(info).filter(k => !k.startsWith('_') && k !== venue);
-  const nTeams = teamIdx.size ? new Set([...teamIdx.values()].filter(t => !/^Team \d$/.test(t.name)).map(t => t.key)).size : 0;
   const tot = all.length, done = all.filter(m => m.status === 'final').length;
-  const phone = (info._scores || '').replace(/.*Text to\s*/i, '');
+  const phone = (info._scores || '').replace(/.*Text to\s*/i, '').trim();
+  const champs = divisions.map(dv => ({ dv, m: all.find(m => m.div === dv && m.kind === 'bracket' && m.status === 'final' && /UNDISPUTED|\bCHAMP\b/i.test(m.name)) })).filter(x => x.m);
+  const mine = following().map(k => teamIdx.get(k)).filter(Boolean);
   main.innerHTML = `
+  ${mine.length ? `<section><div class="spread" style="margin-bottom:8px"><h2 style="font-size:26px">Your teams</h2><a href="${esc(hrefFor('mine'))}" data-go="mine">All your teams →</a></div>
+    <div class="grid">${mine.map(t => `<div class="panel"><div class="spread"><h3 style="font-size:20px">${tlink(t.name, t.age)}</h3><span class="muted">${esc(t.age)}</span></div>${statusCard(t, true)}</div>`).join('')}</div></section>` : ''}
   <section class="hero">
     <div class="panel">
       <span class="label">October 15–17 · Overland Park, KS</span>
-      <h2>National Christian Homeschool Volleyball Championships</h2>
+      ${h2('National Christian Homeschool Volleyball Championships')}
+      <p class="unofficial">An unofficial, easier-to-read copy of the official NCHVC brackets, updated from the official sheets. If anything differs, the official sheet wins.</p>
       <div class="facts">
-        <div class="fact"><b class="num">${nTeams}</b><span class="muted">teams</span></div>
+        <div class="fact"><b class="num">${teams.length}</b><span class="muted">teams</span></div>
         <div class="fact"><b class="num">${divisions.length}</b><span class="muted">divisions</span></div>
         <div class="fact"><b class="num">${done}/${tot}</b><span class="muted">matches final</span></div>
-        <div class="fact"><b>Thu → Sat</b><span class="muted">pools, then brackets</span></div>
+        <div class="fact"><b>Thu → Sat</b><span class="muted"><a href="${esc(hrefFor('help'))}" data-go="help">how it works</a></span></div>
       </div>
     </div>
     <div class="panel" style="display:flex;flex-direction:column;gap:10px">
       ${notices.map(n => `<div class="notice">${esc(n)}</div>`).join('')}
       <div><span class="label">Venue</span><div>${esc(venue.split('\n')[0])}<br><span class="muted">${esc(venue.split('\n').slice(1, 3).join(', ').replace(/:\s*$/, ''))}</span> · <a href="${esc(info[venue] || '#')}" target="_blank" rel="noopener">Map</a></div></div>
-      <div><span class="label">Report scores by text</span><div class="num" style="user-select:all;font-weight:600">${esc(phone)}</div></div>
-      <div class="links">${linkKeys.map(k => `<a href="${esc(info[k])}" target="_blank" rel="noopener">${esc(k)}</a>`).join('')}</div>
+      ${phone ? `<div><span class="label">Coaches report scores by text</span><div class="num" style="font-weight:600"><a href="sms:+${esc(phone.replace(/\D/g, ''))}">${esc(phone)}</a> <span class="muted" style="font-weight:400">(official NCHVC number, texts only)</span></div></div>` : ''}
+      <div><span class="label">Official NCHVC links</span><div class="links">${linkKeys.map(k => `<a href="${esc(info[k])}" target="_blank" rel="noopener">${esc(k)}</a>`).join('')}</div></div>
     </div>
   </section>
+  ${champs.length ? `<section class="panel"><h2 style="font-size:26px;margin-bottom:8px">Champions</h2><div class="places">${champs.map(({ dv, m }) => `<div><span class="tier t-gold"></span><span class="muted">${esc(dv.short)}</span> <span class="pl">${tlink(m.winner, dv.age)}</span></div>`).join('')}</div></section>` : ''}
   <section>
-    <div class="spread" style="margin-bottom:10px"><h2 style="font-size:26px">Divisions</h2><span class="muted">How it works: Thursday pools seed Friday's Gold Ball brackets; losers drop to Copper/Bronze; pool last-place teams play Iron.</span></div>
+    <div class="spread" style="margin-bottom:10px"><h2 style="font-size:26px">Divisions</h2><span class="muted">Thursday pools seed Friday's Gold Ball brackets; losers drop to Copper/Bronze; pool last-place teams play Iron. <a href="${esc(hrefFor('help'))}" data-go="help">More</a></span></div>
     <div class="grid">${divisions.map(d => {
       const pr = progress(d); const nt = new Set(d.pools.filter(p => !p.name.startsWith('Iron')).flatMap(p => p.teams.map(t => t.team))).size;
       const tabs = d.sheet.brackets.map(b => b.tab);
-      return `<button class="divcard" data-go="d-${d.id}">
+      return `<a class="divcard" href="${esc(hrefFor('d-' + d.id))}" data-go="d-${d.id}">
         <div class="spread"><h3>${esc(d.short)}</h3><span class="muted">${d.gender}</span></div>
         <span class="muted">${nt} teams${d.shared ? ' · pools shared with ' + esc(d.shared.label.replace(/:.*$/, '').replace(/Division /, 'D')) : ''}</span>
-        <div class="row" style="gap:6px">${tabs.map(t => `<span class="tier t-${tierOf(t)}" title="${esc(t)}"></span>`).join('')}<span class="muted" style="font-size:13px">${esc(tabs.join(' · '))}</span></div>
+        <div class="row" style="gap:6px">${tabs.map(t => `<span class="tier t-${tierOf(t)}" title="${esc(tabLabel(t))}"></span>`).join('')}<span class="muted" style="font-size:13px">${esc(tabs.map(tabLabel).join(' · '))}</span></div>
         <div class="bar"><i style="width:${pr.tot ? (100 * pr.done / pr.tot).toFixed(1) : 0}%"></i></div>
         <span class="muted num" style="font-size:13px">${pr.done} of ${pr.tot} matches final</span>
-      </button>`; }).join('')}</div>
+      </a>`; }).join('')}</div>
   </section>
   ${footer()}`;
 }
@@ -345,85 +604,153 @@ function viewHome() {
 function poolCard(p, dv) {
   const ms = all.filter(m => m.kind === 'pool' && m.pool === p);
   const done = p.standings.length && p.standings.every(s => s.team);
-  const st = ms.every(m => m.status === 'final') && ms.length ? 'final' : ms.some(m => m.status !== 'upcoming') ? 'live' : 'upcoming';
+  const st = ms.length && ms.every(m => m.status === 'final') ? 'final' : ms.some(m => m.status !== 'upcoming') ? 'live' : 'upcoming';
+  const iron = p.name.startsWith('Iron');
+  const label = t => isPlaceholder(t.team) ? `${t.team}${ironSource(dv, p, t.seed) ? ` <span class="muted">(${esc(ironSource(dv, p, t.seed))})</span>` : ''}` : t.team ? tlink(t.team, dv.age) : `<span class="tbd muted">Seed ${t.seed} (TBD)</span>`;
+  let rows = [...p.teams], caption = '';
+  if (done) rows.sort((a, b) => p.standings.findIndex(s => s.team === a.team) - p.standings.findIndex(s => s.team === b.team));
+  else if (ms.some(m => m.status !== 'upcoming')) { rows.sort((a, b) => (b.w ?? 0) - (a.w ?? 0) || (b.diff ?? 0) - (a.diff ?? 0)); caption = 'Current order by sets won, then points (unofficial; ties are decided by head-to-head)' }
+  const rank = t => done ? esc((p.standings.find(s => s.team === t.team) || {}).rank || '') : '';
+  const nameFor = n => iron && isPlaceholder(n) ? (ironSource(dv, p, +n.replace(/\D/g, '')) || n) : n;
   return `<article class="panel pool">
     <div class="spread"><h3>${esc(p.name)}</h3>${pill(st)}</div>
     <div class="muted" style="font-size:13px;margin-bottom:8px">${esc(court(p.court) || 'Various courts')} · ${p.bestOf === 3 ? 'Best of 3' : '2 sets per match'}</div>
-    <table><thead><tr><th>Team</th><th class="r">Sets W–L</th><th class="r">+/-</th></tr></thead><tbody>
-    ${[...p.teams].sort((a, b) => done ? 0 : 0).map(t => `<tr><td>${t.team ? tlink(t.team, dv.age) : `<span class="tbd muted">Seed ${t.seed} (TBD)</span>`}</td><td class="r num">${t.w ?? 0}–${t.l ?? 0}</td><td class="r num">${t.diff > 0 ? '+' : ''}${t.diff}</td></tr>`).join('')}
+    <table>${caption ? `<caption>${caption}</caption>` : ''}<thead><tr>${done ? '<th>#</th>' : ''}<th>Team</th><th class="r">Sets W–L</th><th class="r">+/-</th></tr></thead><tbody>
+    ${rows.map(t => `<tr>${done ? `<td class="num">${rank(t)}</td>` : ''}<td>${label(t)}</td><td class="r num">${t.w ?? 0}–${t.l ?? 0}</td><td class="r num">${t.diff > 0 ? '+' : ''}${t.diff ?? 0}</td></tr>`).join('')}
     </tbody></table>
-    <div class="sched">${ms.map(m => matchRow(m, dv)).join('')}</div>
+    <div class="sched">${ms.map(m => matchRow(m, dv, nameFor)).join('')}</div>
     ${p.standings.length ? `<div style="margin-top:12px"><span class="label">${done ? 'Final standings' : 'Where each finish goes'}</span>
       <table><tbody>${p.standings.map(s => `<tr><td style="width:44px" class="num">${esc(s.rank)}</td><td>${s.team ? tlink(s.team, dv.age) : ''}</td><td class="adv r">→ ${esc(s.adv)}</td></tr>`).join('')}</tbody></table></div>` : ''}
   </article>`;
 }
-function matchRow(m, dv) {
-  const flipW = m.winner && m.winner === m.b;
-  return `<div class="m"><div class="when">${when(m)}${m.kind === 'bracket' || !m.pool?.court || m.court !== m.pool.court ? `<br>${esc(court(m.court))}` : ''}</div>
-    <div class="vs">${tlink(m.a, dv.age, m.winner === m.a ? 'w' : '')}${tlink(m.b, dv.age, m.winner === m.b ? 'w' : '')}</div>
-    <div class="sets">${m.sets?.length ? esc(setsTxt(m.sets)) : pill(m.status)}</div></div>`;
+function matchRow(m, dv, nameFor = n => n) {
+  const name = n => isPlaceholder(n) ? `<span class="tbd">${esc(nameFor(n))}</span>` : tlink(n, dv.age, m.winner === n ? 'w' : '');
+  const right = m.status === 'live' ? `${pill('live')}${m.sets.length ? `<div>${esc(setsTxt(setsFor(m, m.a)))}</div>` : ''}` : m.sets?.length ? esc(setsTxt(setsFor(m, m.a))) : m.status === 'final' && !m.winner ? 'Split' : pill(m.status);
+  return `<div class="m"><div class="when">${m.rolling ? `≈${clock(m.est)}<br>rolling` : esc(m.timeLabel)}${!m.pool?.court || m.court !== m.pool.court ? `<br>${esc(court(m.court))}` : ''}</div>
+    <div class="vs"><span>${name(m.a)} <span class="tag" title="${HOME}">H</span></span><span>${name(m.b)}</span></div>
+    <div class="sets">${right}</div></div>`;
 }
 
-function bracketCanvas(cl, dv, hlTeam) {
-  const ms = cl.matches;
-  const cols = [...new Set(ms.map(m => m.col))].sort((a, b) => a - b);
-  const minR = Math.min(...ms.map(m => m.row));
-  const PX = 10.5, W = 248;
-  const H = Math.max(...ms.map(m => m.row)) - minR;
-  const cards = ms.map(m => {
-    const x = cols.indexOf(m.col) * W, y = (m.row - minR) * PX;
-    const hl = hlTeam && (m.top.team === hlTeam || m.bottom.team === hlTeam);
-    const sl = s => {
-      const isW = m.winner && s.team === m.winner;
-      const sets = s.score && isW ? s.score : '';
-      return `<div class="slot ${isW ? 'w' : ''}"><span class="sd">${esc(seedTxt(s.seed))}</span><span class="nm">${s.team ? tlink(s.team, dv.age, isW ? 'w' : '') : '<span class="tbd">TBD</span>'}</span>${sets ? `<span class="bsc">${esc(sets)}</span>` : ''}</div>`;
-    };
-    const bo = m.bestOf === 5 ? ' · Bo5' : '';
-    return `<div class="bm ${hl ? 'hl' : ''}" style="left:${x}px;top:${y}px"><div class="hd"><b>${esc(m.name.replace(new RegExp('^' + dv.age + '\\s*(D\\d\\s*)?|^' + dv.sheet.label + '\\s*', 'i'), ''))}</b><span class="num">${DAYNAME[DAYS[m.day] ?? 0]} ${esc(m.time)}</span></div>
-      ${sl(m.top)}${sl(m.bottom)}<div class="ft">${esc(court(m.court))}${bo}${m.loserTo ? ' · Loser → ' + esc(m.loserTo) : ''}</div>${m.status === 'live' ? `<div class="ft" style="color:var(--live);font-weight:700">● In progress · ${esc(setsTxt(m.sets))}</div>` : ''}</div>`;
-  }).join('');
-  return `<div class="bwrap"><div class="bcanvas" style="width:${cols.length * W - 20}px;height:${H * PX + 130}px">${cards}</div></div>`;
+function bracketCard(m, dv, hlName, pos = '') {
+  const r = m.ref;
+  const sl = (s, side) => {
+    const isW = m.winner && s.team === m.winner;
+    let line = '';
+    if (m.status === 'final' && isW) line = m.noScore ? 'won (score not reported)' : setsTxt(setsFor(m, s.team));
+    const src = !s.team ? slotSource(dv, m.tab, s.seed) : '';
+    const adv = m.advances && m.advances === s.team ? ' <span class="tag">advances</span>' : '';
+    return `<div class="slot ${isW ? 'w' : ''}"><span class="sd">${esc(seedTxt(s.seed))}</span><span class="nm">${s.team ? tlink(s.team, dv.age, isW ? 'w' : '') : `<span class="tbd">${esc(src || 'TBD')}</span>`}${side === 'top' && s.team ? ' <span class="tag" title="' + HOME + '">H</span>' : ''}${adv}</span>${line ? `<span class="bsc">${esc(line)}</span>` : ''}</div>`;
+  };
+  const hl = hlName && (r.top.team === hlName || r.bottom.team === hlName);
+  const live = m.status === 'live' ? `<div class="ft live">● In progress${m.sets.length ? ` · ${esc(r.top.team === m.persp ? r.top.team : r.bottom.team)} ${esc(setsTxt(m.sets))}` : ''}</div>` : '';
+  const usa = m.advances ? `<div class="ft">${esc(m.advances)} advances (Team USA rule)</div>` : '';
+  return `<div class="bm ${hl ? 'hl' : ''}" ${pos} data-mid="${m.id}"><div class="hd"><b>${esc(shortName(m.name, dv))}</b><span class="num">${DAYNAME[m.day]} ${esc(m.timeLabel)}</span></div>
+    ${sl(r.top, 'top')}${sl(r.bottom, 'bottom')}${live}${usa}<div class="ft">${esc(court(m.court))}${m.bestOf === 5 ? ' · Best of 5' : ''}${m.loserTo ? ' · Loser → ' + esc(m.loserTo) : ''}</div></div>`;
 }
+function bracketCanvas(cl, dv, hlName) {
+  const ms = all.filter(m => m.cl === cl);
+  const cols = [...new Set(ms.map(m => m.ref.col))].sort((a, b) => a - b);
+  const minR = Math.min(...ms.map(m => m.ref.row));
+  const PX = 10.5, W = 252;
+  const H = Math.max(...ms.map(m => m.ref.row)) - minR;
+  return `<div class="bwrap"><div class="bcanvas" style="width:${cols.length * W - 20}px;height:${H * PX + 150}px">${ms.map(m => bracketCard(m, dv, hlName, `style="left:${cols.indexOf(m.ref.col) * W}px;top:${(m.ref.row - minR) * PX}px"`)).join('')}</div></div>`;
+}
+function bracketList(ms, dv, hlName) {
+  const groups = [];
+  for (const m of [...ms].sort((a, b) => a.day - b.day || (a.mins ?? 9999) - (b.mins ?? 9999))) {
+    const k = `${DAYLONG[m.day]} ${m.timeLabel}`;
+    if (!groups.length || groups[groups.length - 1].k !== k) groups.push({ k, ms: [] });
+    groups[groups.length - 1].ms.push(m);
+  }
+  return `<div class="blist">${groups.map(g => `<div><div class="label" style="margin-bottom:6px">${esc(g.k)}</div><div class="slotgrp">${g.ms.map(m => bracketCard(m, dv, hlName)).join('')}</div></div>`).join('')}</div>`;
+}
+function placesFor(dv) {
+  const out = [];
+  for (const m of all.filter(m => m.div === dv && m.kind === 'bracket' && m.status === 'final')) {
+    for (const team of [m.a, m.b]) { const p = placement(m, team); if (p) out.push({ ...p, team, tierKey: tierOf(m.tab) }) }
+  }
+  const order = { Undisputed: 0, Gold: 1, Silver: 2, Bronze: 3, Copper: 4, Iron: 5 };
+  return out.sort((a, b) => (order[a.tier] ?? 9) - (order[b.tier] ?? 9) || a.rank - b.rank);
+}
+const bview = () => store.get('nchvc.bview') || (innerWidth < 700 ? 'list' : 'bracket');
 
-function viewDivision(dv, tab) {
+function divisionTabs(dv) {
   const tabs = [];
   const regPools = dv.pools.filter(p => !p.name.startsWith('Iron'));
   const ironPools = dv.pools.filter(p => p.name.startsWith('Iron'));
-  if (regPools.length) tabs.push({ id: 'pools', label: dv.shared ? 'Pools (shared)' : 'Pools', tier: 'pool' });
-  for (const b of dv.sheet.brackets) tabs.push({ id: slug(b.tab), label: b.tab.replace(/ Brackets?$/, '').replace('GBSS', 'Gold Ball Semis'), tier: tierOf(b.tab), b });
-  if (ironPools.length && !tabs.some(t => t.id === 'iron-pools')) tabs.splice(1, 0, { id: 'iron-pools', label: 'Iron Pools', tier: 'iron' });
-  const cur = tabs.find(t => t.id === tab) || tabs[0];
+  if (regPools.length) tabs.push({ id: 'pools', label: dv.shared ? 'Pools (shared)' : 'Pools', tier: 'pool', pools: regPools });
+  for (const b of dv.sheet.brackets) tabs.push({ id: slug(b.tab), label: tabLabel(b.tab), tier: tierOf(b.tab), b });
+  if (ironPools.length) tabs.splice(regPools.length ? 1 : 0, 0, { id: 'iron-pools', label: 'Iron Pools', tier: 'iron', pools: ironPools });
+  return tabs;
+}
+function smartTab(dv, tabs) {
+  const poolMs = all.filter(m => m.kind === 'pool' && dv.pools.includes(m.pool) && !m.pool.name.startsWith('Iron'));
+  if (poolMs.some(m => m.status !== 'final')) return tabs[0];
+  const ms = t => all.filter(m => m.div === dv && m.tabId === t.id);
+  const active = tabs.filter(t => t.b && ms(t).some(m => m.status === 'live'));
+  if (active.length) return active[0];
+  const champ = tabs.find(t => /championship/i.test(t.label));
+  if (tabs.every(t => !t.b || ms(t).every(m => m.status === 'final')) && champ) return champ;
+  return tabs.find(t => t.b && ms(t).some(m => m.status === 'upcoming' && (m.a || m.b))) || tabs.find(t => t.b) || tabs[0];
+}
+function viewDivision(dv, tab, hlKey) {
+  const tabs = divisionTabs(dv);
+  const cur = tabs.find(t => t.id === tab)
+    || (tab && tabs.find(t => t.id.startsWith(tab) || tab.startsWith(t.id)))   // "gold-ball-bracket" vs "gold-ball-brackets"
+    || smartTab(dv, tabs);
+  if (tab && cur.id !== tab) { current = `d-${dv.id}~${cur.id}`; try { history.replaceState({ route: current }, '', routeUrl(current)) } catch {} }
+  const hlName = hlKey ? teamIdx.get(hlKey)?.name : '';
   const pr = progress(dv);
   let body = '';
-  if (cur.id === 'pools') {
-    body = (dv.shared ? `<p class="muted" style="margin:0">${esc(dv.age)} Division ${esc(dv.shared.divs.join(' & '))} play pools together. Advancement on the right of each pool shows which division each finish goes to.</p>` : '') +
-      `<div class="grid">${regPools.map(p => poolCard(p, dv)).join('')}</div>`;
-  } else if (cur.id === 'iron-pools') {
-    body = `<div class="grid">${ironPools.map(p => poolCard(p, dv)).join('')}</div>`;
+  if (cur.pools) {
+    body = (cur.id === 'pools' && dv.shared ? `<p class="muted" style="margin:0">${esc(dv.age)} Division ${esc(dv.shared.divs.join(' & ') || '')} play pools together. The right-hand column of each pool shows where each finish goes.</p>` : '') +
+      `<div class="grid">${cur.pools.map(p => poolCard(p, dv)).join('')}</div>`;
   } else {
-    const b = cur.b;
-    body = b.clusters.map(cl => {
-      const finalM = cl.matches.reduce((a, m) => (m.col > a.col ? m : a), cl.matches[0]);
-      const title = cl.label ? `${cl.label} ${cur.label}` : (cl.matches.length === 1 ? finalM.name.replace(new RegExp('^' + dv.age + '\\s*(D\\d\\s*)?', 'i'), '') : cur.label);
-      return `<section><div class="btitle"><span class="tier t-${cur.tier}"></span><h3>${esc(title)}</h3></div>${bracketCanvas(cl, dv)}</section>`;
-    }).join('') + (b.results.length ? `<div class="results">${b.results.map(r => `<div class="panel"><span class="label">${esc(r.title)}</span><table><tbody>${r.rows.map(x => `<tr><td class="num" style="width:40px">${esc(x.rank)}</td><td>${x.team ? tlink(x.team, dv.age) : '<span class="tbd muted">TBD</span>'}</td><td class="adv r">→ ${esc(x.adv)}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div>` : '');
+    const b = cur.b, mode = bview();
+    body = `<div class="row"><span class="label">View</span><div class="seg" role="group" aria-label="Bracket layout"><button class="${mode === 'bracket' ? 'on' : ''}" data-bview="bracket" aria-pressed="${mode === 'bracket'}">Bracket</button><button class="${mode === 'list' ? 'on' : ''}" data-bview="list" aria-pressed="${mode === 'list'}">List by time</button></div></div>` +
+      b.clusters.map(cl => {
+        const ms = all.filter(m => m.cl === cl);
+        const finalM = ms.reduce((a, m) => (m.ref.col > a.ref.col ? m : a), ms[0]);
+        const title = cl.label ? `${cl.label} ${cur.label}` : (ms.length === 1 ? shortName(finalM.name, dv) : cur.label);
+        return `<section><div class="btitle"><span class="tier t-${cur.tier}"></span><h3>${esc(title)}</h3></div>${mode === 'list' ? bracketList(ms, dv, hlName) : bracketCanvas(cl, dv, hlName)}</section>`;
+      }).join('') + (b.results.length ? `<div class="results">${b.results.map(r => `<div class="panel"><span class="label">${esc(r.title)}</span><table><tbody>${r.rows.map(x => `<tr><td class="num" style="width:40px">${esc(x.rank)}</td><td>${x.team ? tlink(x.team, dv.age) : '<span class="tbd muted">TBD</span>'}</td><td class="adv r">→ ${esc(x.adv)}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div>` : '');
   }
+  const places = placesFor(dv);
+  const sheetUrl = cur.pools && dv.shared ? dv.shared.url : dv.sheet.url;
   setTitle(`${dv.short} ${cur.label}`);
   main.innerHTML = `
-  <div class="spread"><div><span class="label">${esc(dv.gender)}</span><h2 style="font-size:36px;line-height:1.05">${esc(dv.short)}</h2></div>
-    <div class="row"><span class="muted num">${pr.done} of ${pr.tot} matches final</span><a href="${esc(dv.sheet.url)}" target="_blank" rel="noopener">Official sheet ↗</a>${shareBtn(`${dv.short} ${cur.label}`)}</div></div>
-  <div class="tabs" role="tablist">${tabs.map(t => `<button class="tab ${t === cur ? 'on' : ''}" role="tab" aria-selected="${t === cur}" data-go="d-${dv.id}~${t.id}"><span class="tier t-${t.tier}"></span>${esc(t.label)}</button>`).join('')}</div>
+  <div class="spread"><div><span class="label">${esc(dv.gender)}</span>${h2(esc(dv.short), 'style="font-size:36px;line-height:1.05"')}</div>
+    <div class="row"><span class="muted num">${pr.done} of ${pr.tot} matches final</span><a href="${esc(sheetUrl)}" target="_blank" rel="noopener">Official sheet ↗</a>${shareBtn(`${dv.short} ${cur.label}`)}</div></div>
+  ${places.length ? `<section class="panel"><span class="label">${places.some(p => p.tier === 'Undisputed') ? 'Final places' : 'Final places so far'}</span><div class="places" style="margin-top:6px">${places.map(p => `<div><span class="tier t-${p.tier === 'Undisputed' ? 'gold' : (p.tierKey || 'pool')}"></span><span class="muted">${esc(p.text)}</span> <span class="pl">${tlink(p.team, dv.age)}</span></div>`).join('')}</div></section>` : ''}
+  <div class="tabs" role="tablist">${tabs.map(t => `<a class="tab ${t === cur ? 'on' : ''}" role="tab" aria-selected="${t === cur}" href="${esc(hrefFor(`d-${dv.id}~${t.id}`))}" data-go="d-${dv.id}~${t.id}"><span class="tier t-${t.tier}"></span>${esc(t.label)}</a>`).join('')}</div>
   ${body}
   ${footer()}`;
+  const tabOn = main.querySelector('.tab.on'); if (tabOn) { const row = tabOn.parentElement; row.scrollLeft = tabOn.offsetLeft - row.clientWidth / 2 + tabOn.offsetWidth / 2 }
+  // cards sit on the sheet's own grid; when extra lines make one taller than its gap, nudge the cards below it down
+  for (const canvas of main.querySelectorAll('.bcanvas')) {
+    const cols = new Map();
+    for (const el of canvas.children) { const k = el.style.left; if (!cols.has(k)) cols.set(k, []); cols.get(k).push(el) }
+    let bottom = 0;
+    for (const list of cols.values()) {
+      list.sort((a, b) => parseFloat(a.style.top) - parseFloat(b.style.top));
+      let floor = -Infinity;
+      for (const el of list) { const top = Math.max(parseFloat(el.style.top), floor); el.style.top = top + 'px'; floor = top + el.offsetHeight + 10; bottom = Math.max(bottom, floor) }
+    }
+    canvas.style.height = bottom + 'px';
+  }
+  if (hlName) requestAnimationFrame(() => {  // bring the team's latest game in this bracket into view
+    const cards = [...main.querySelectorAll('.bm.hl')], at = el => { const m = all[+el.dataset.mid]; return m.day * 1440 + (m.mins ?? 0) };
+    cards.sort((a, b) => at(b) - at(a))[0]?.scrollIntoView({ block: 'center', inline: 'center' });
+  });
 }
 
 // A saved team link whose name was later edited on the official sheet: find the team it most likely meant.
-// Tokens that are only a number or a single letter ("OKC Storm- 1" vs "- 2", "Defenders- A" vs "- B")
-// identify different teams from the same club, so those must match exactly.
+// Tokens that name a specific team in a club ("- 1"/"- 2", "- A"/"- B", JV, II, colours) must match exactly.
+const IDENT = new Set(['jv', 'i', 'ii', 'iii', 'iv', 'black', 'white', 'red', 'blue', 'gold', 'silver', 'green', 'teal', 'purple', 'orange', 'navy', 'royal', 'maroon', 'gray', 'grey', 'pink', 'yellow', 'usa']);
 function resolveTeam(key) {
   const cut = key.indexOf('-');
   const age = key.slice(0, cut), want = key.slice(cut + 1).split('-').filter(Boolean);
-  const ident = toks => toks.filter(x => /^\d+$/.test(x) || x.length === 1).sort().join(' ');
+  const ident = toks => toks.filter(x => /^\d+$/.test(x) || x.length === 1 || IDENT.has(x)).sort().join(' ');
   const cands = teams.filter(t => slug(t.age) === age).map(t => {
     const have = t.key.slice(age.length + 1).split('-').filter(Boolean);
     const shared = want.filter(x => have.includes(x)).length;
@@ -433,10 +760,19 @@ function resolveTeam(key) {
   if (good.length === 1 || (good.length > 1 && good[0].score - good[1].score >= 0.2)) return { match: good[0].t };
   return { suggest: cands.slice(0, 5).map(c => c.t) };
 }
-
-function viewTeam(key, note = '') {
+function teamMatches(t) {
+  const mine = all.filter(m => (m.a === t.name || m.b === t.name) && m.div.age === t.age);
+  const uniq = [], seen = new Set();
+  for (const m of mine) { const k = m.kind + m.name + m.a + m.b + m.day + m.mins; if (!seen.has(k)) { seen.add(k); uniq.push(m) } }
+  return uniq;
+}
+function viewTeam(key, note = '', fromPoll = false) {
   const t = teamIdx.get(key);
   if (!t) {
+    if (fromPoll) {  // never jump to another team during a live update; the sheet may be mid-edit
+      main.querySelector('.tv-head') && main.insertAdjacentHTML('afterbegin', '<div class="notice">This team is missing from the latest update of the official sheet (it may be mid-edit). Rechecking automatically.</div>');
+      return;
+    }
     const r = resolveTeam(key);
     if (r.match) {
       current = 't-' + r.match.key;
@@ -444,84 +780,160 @@ function viewTeam(key, note = '') {
       try { history.replaceState({ route: current }, '', routeUrl(current)) } catch {}
       return viewTeam(r.match.key, `This link used an older spelling of the team name. The official sheet now lists “${r.match.name}”, and the link has been updated.`);
     }
-    setTitle('');
-    main.innerHTML = `<div class="panel"><h3 style="font-size:22px;margin-bottom:6px">Team not found</h3>
+    setTitle('Team not found');
+    main.innerHTML = `<div class="panel">${h2('Team not found', 'style="font-size:24px;margin-bottom:6px"')}
       <p style="margin:0 0 10px">The name in this link doesn't match a team on the official sheets. The organizers may have renamed it.</p>
       ${r.suggest.length ? `<span class="label">Did you mean</span><div class="path" style="margin-top:6px">${r.suggest.map(x => `<div>${tlink(x.name, x.age)} <span class="muted">${esc(x.age)}</span></div>`).join('')}</div>` : '<p class="muted" style="margin:0">Try the search box above.</p>'}</div>`;
     return;
   }
-  const mine = all.filter(m => (m.a === t.name || m.b === t.name) && m.div.age === t.age);
-  const uniq = []; const seen = new Set();
-  for (const m of mine) { const k = m.kind + m.name + m.a + m.b + m.day + m.mins; if (!seen.has(k)) { seen.add(k); uniq.push(m) } }
+  const uniq = teamMatches(t);
   const dvs = [...t.divs].map(id => divisions.find(d => d.id === id));
   const pools = []; const ps = new Set();
   for (const dv of dvs) for (const p of dv.pools) if (p.teams.some(x => x.team === t.name) && !ps.has(p)) { ps.add(p); pools.push({ p, dv }) }
-  const next = uniq.find(m => m.status !== 'final');
   const rec = uniq.filter(m => m.status === 'final').reduce((r, m) => (m.winner === t.name ? r.w++ : m.winner ? r.l++ : r.s++, r), { w: 0, l: 0, s: 0 });
   const opp = m => m.a === t.name ? m.b : m.a;
-  const res = m => m.status !== 'final' ? pill(m.status) : !m.winner ? `<span class="muted" style="font-weight:700">Split</span> <span class="sets">${esc(setsTxt(m.sets, m.b === t.name))}</span>` : m.winner === t.name ? `<span class="res-w">W</span> <span class="sets">${esc(setsTxt(m.sets, m.b === t.name && m.kind === 'pool'))}</span>` : `<span class="res-l">L</span> <span class="sets">${esc(setsTxt(m.sets, m.b === t.name && m.kind === 'pool'))}</span>`;
-  // where they go from pool
+  const isFollowing = following().includes(t.key);
   const poolInfo = pools.map(({ p, dv }) => {
     const mine = p.standings.find(s => s.team === t.name);
     const row = p.teams.find(x => x.team === t.name);
-    return `<div class="panel"><div class="spread"><h3 style="font-size:22px">${esc(p.name)}</h3><button class="tlink" style="color:var(--accent)" data-go="d-${dv.id}~${p.name.startsWith('Iron') ? 'iron-pools' : 'pools'}">${esc(dv.short)} pools →</button></div>
+    const ctx = poolCtx(dv);
+    return `<div class="panel"><div class="spread"><h3 style="font-size:22px">${esc(p.name)}</h3><a class="tlink" style="color:var(--accent)" href="${esc(hrefFor(`d-${dv.id}~${p.name.startsWith('Iron') ? 'iron-pools' : 'pools'}`))}" data-go="d-${dv.id}~${p.name.startsWith('Iron') ? 'iron-pools' : 'pools'}">See the pool →</a></div>
       <div class="muted" style="margin-bottom:8px">${esc(court(p.court))} · Sets ${row?.w ?? 0}–${row?.l ?? 0} · ${row?.diff > 0 ? '+' : ''}${row?.diff ?? 0} points</div>
-      ${mine ? `<div><b>Finished ${esc(mine.rank)}</b> → ${esc(mine.adv)}</div>` :
-        p.standings.length ? `<span class="label">If they finish…</span><table><tbody>${p.standings.map(s => `<tr><td class="num" style="width:44px">${esc(s.rank)}</td><td class="adv">→ ${esc(s.adv)}</td></tr>`).join('')}</tbody></table>` : ''}
+      ${mine ? `<div><b>Finished ${esc(mine.rank)}</b> → ${esc(mine.adv)}${slotLine(resolveAdv(mine.adv, ctx)) ? `<div class="muted">${slotLine(resolveAdv(mine.adv, ctx))}</div>` : ''}</div>` :
+        p.standings.length ? `<span class="label">If they finish…</span><table><tbody>${p.standings.map(s => { const sl = slotLine(resolveAdv(s.adv, ctx)); return `<tr><td class="num" style="width:44px">${esc(s.rank)}</td><td class="adv">→ ${esc(s.adv)}${sl ? `<br>${sl}` : ''}</td></tr>` }).join('')}</tbody></table>` : ''}
     </div>`;
   }).join('');
   setTitle(`${t.name} (${t.age})`);
   main.innerHTML = `${note ? `<div class="notice">${esc(note)}</div>` : ''}
-  <div class="tv-head spread"><div><span class="label">${esc(t.gender)} · ${esc(t.age)} · ${esc(dvs.map(d => d.short).join(', '))}</span><h2>${esc(t.name)}</h2></div>
-    <div class="row"><span class="num" style="font-family:var(--f-display);font-size:28px">${rec.w}–${rec.l}${rec.s ? '–' + rec.s : ''}</span><span class="muted">match record${rec.s ? ' (W–L–split)' : ''}</span>${shareBtn(`${t.name} (${t.age})`)}</div></div>
-  ${next ? `<div class="next"><span class="label">${next.status === 'live' ? 'Playing now' : 'Next match'}</span>
-     <h3>${when(next)} · ${esc(court(next.court))}</h3>
-     ${next.rolling ? `<div class="muted" style="margin-bottom:4px">${rollNote(next)}</div>` : ''}
-     <div>vs ${opp(next) ? tlink(opp(next), t.age) : `<span class="muted">${esc(seedTxt(next.a === t.name ? next.sb : next.sa) || 'TBD')} (TBD)</span>`} <span class="muted">· ${esc(next.name)}</span></div></div>` :
-     `<div class="panel muted">No upcoming matches listed yet. Bracket spots fill in as pool and bracket results come in.</div>`}
-  <section><h3 style="font-size:24px;margin-bottom:8px">Schedule &amp; results</h3><div class="path">${uniq.map(m => `<div class="step">
-      <div class="when"><b>${when(m)}</b><span class="muted">${esc(court(m.court))}${m.rolling ? ` · match ${m.order} of ${m.ofN}` : ''}</span></div>
-      <div style="min-width:0"><div class="muted" style="font-size:12.5px">${esc(m.name)}${m.kind === 'bracket' && m.loserTo && m.status !== 'final' ? ` · loser → ${esc(m.loserTo)}` : ''}</div><div>vs ${opp(m) ? tlink(opp(m), t.age) : '<span class="tbd muted">TBD</span>'}</div></div>
-      <div>${res(m)}</div></div>`).join('')}</div></section>
+  <div class="tv-head spread"><div><span class="label">${esc(t.gender)} · ${esc(t.age)} · ${esc(dvs.map(d => d.short).join(', '))}</span>${h2(esc(t.name))}</div>
+    <div class="row"><span class="num" style="font-family:var(--f-display);font-size:28px">${rec.w}–${rec.l}${rec.s ? '–' + rec.s : ''}</span><span class="muted">match record${rec.s ? ' (W–L–split)' : ''}</span></div></div>
+  <div class="row"><button class="btn ${isFollowing ? 'on' : ''}" data-follow="${esc(t.key)}" aria-pressed="${isFollowing}">${isFollowing ? '★ Following' : '☆ Follow this team'}</button>${shareBtn(`${t.name} (${t.age})`)}${CAN_SHARE ? `<button class="btn" data-ics="${esc(t.key)}">Add to calendar</button>` : ''}</div>
+  ${statusCard(t)}
+  <section><h3 style="font-size:24px;margin-bottom:8px">Schedule &amp; results</h3><div class="path">${uniq.map(m => `<div class="step ${m.status === 'live' ? 'is-live' : ''}">
+      <div class="when"><b>${when(m)}</b><span class="muted">${esc(court(m.court))}${m.rolling ? ` · est.` : ''}</span></div>
+      <div style="min-width:0"><div class="muted" style="font-size:12.5px">${m.kind === 'bracket' ? `<a href="${esc(hrefFor(`d-${m.div.id}~${m.tabId}~${t.key}`))}" data-go="d-${m.div.id}~${m.tabId}~${t.key}">${esc(m.name)}</a>` : esc(m.name)}${m.kind === 'bracket' && m.loserTo && m.status !== 'final' ? ` · loser → ${esc(m.loserTo)}` : ''}</div>
+        <div>vs ${opp(m) ? tlink(opp(m), t.age) : `<span class="tbd muted">${esc(m.kind === 'bracket' ? (slotSource(m.div, m.tab, m.a === t.name ? m.sb : m.sa) || 'TBD') : 'TBD')}</span>`} ${homeTag(m, t.name)}</div></div>
+      <div>${resultFor(m, t.name)}</div></div>`).join('')}</div></section>
   <div class="grid">${poolInfo}</div>
-  ${uniq.filter(m => m.kind === 'bracket').length ? '' : `<p class="muted" style="margin:0">Bracket games appear here once pool results place this team into a bracket.</p>`}
+  ${footer()}`;
+}
+
+function viewMine() {
+  const mine = following().map(k => teamIdx.get(k)).filter(Boolean);
+  setTitle('My teams');
+  if (!mine.length) {
+    main.innerHTML = `<div class="panel">${h2('My teams', 'style="font-size:30px;margin-bottom:6px"')}<p style="margin:0">Open any team and tap <b>☆ Follow this team</b>. Followed teams show up here and at the top of the overview, with every match in one timeline. This list is saved on this device only.</p></div>${footer()}`;
+    return;
+  }
+  const ms = all.filter(m => mine.some(t => (m.a === t.name || m.b === t.name) && m.div.age === t.age));
+  const uniq = [...new Map(ms.map(m => [m.id, m])).values()].sort((a, b) => a.day - b.day || (a.mins ?? 9999) - (b.mins ?? 9999));
+  const who = m => mine.filter(t => (m.a === t.name || m.b === t.name) && m.div.age === t.age);
+  const conflicts = m => m.status === 'final' || m.mins == null ? [] : uniq.filter(x => x !== m && x.day === m.day && x.status !== 'final' && x.mins != null && Math.abs(x.mins - m.mins) < 60 && x.court !== m.court);
+  main.innerHTML = `<div class="spread">${h2('My teams', 'style="font-size:34px"')}<span class="muted">Saved on this device</span></div>
+  <div class="grid">${mine.map(t => `<div class="panel"><div class="spread"><h3 style="font-size:20px">${tlink(t.name, t.age)}</h3><button class="btn" data-follow="${esc(t.key)}" aria-pressed="true">★ Unfollow</button></div><span class="muted">${esc(t.age)}</span>${statusCard(t, true)}</div>`).join('')}</div>
+  <section><h3 style="font-size:24px;margin-bottom:8px">All matches, in time order</h3><div class="path">${uniq.map(m => { const c = conflicts(m); return `<div class="step ${m.status === 'live' ? 'is-live' : ''}">
+    <div class="when"><b>${when(m)}</b><span class="muted">${esc(court(m.court))}</span></div>
+    <div style="min-width:0"><div class="muted" style="font-size:12.5px">${esc(m.div.short)} · ${esc(m.name)}</div><div>${who(m).map(t => `<b>${esc(t.name)}</b> vs ${tlink(m.a === t.name ? m.b : m.a, m.div.age)}`).join('<br>')}</div>
+    ${c.length ? `<div class="conflict">Overlaps with ${c.map(x => `${esc(court(x.court))} at ${when(x)}`).join(', ')}</div>` : ''}</div>
+    <div>${who(m)[0] ? resultFor(m, who(m)[0].name) : pill(m.status)}</div></div>` }).join('')}</div></section>
   ${footer()}`;
 }
 
 function viewCourts(day) {
   const days = [...new Set(all.map(m => m.day))].sort();
-  const d = days.includes(day) ? day : days[0];
+  const d = days.includes(day) ? day : (days.find(x => all.some(m => m.day === x && m.status !== 'final')) ?? days[0]);
+  const mode = store.get('nchvc.cmode') || 'all';
+  const pick = store.get('nchvc.court') || '';
   const by = new Map();
   for (const m of all.filter(m => m.day === d)) { const c = court(m.court) || 'TBD'; if (!by.has(c)) by.set(c, []); by.get(c).push(m) }
   const keys = [...by.keys()].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
-  const dayName = ['Thursday', 'Friday', 'Saturday'][d];
-  setTitle(`Courts · ${dayName}`);
-  main.innerHTML = `<div class="spread"><h2 style="font-size:36px">By court</h2>
-    <div class="row"><div class="seg" role="tablist">${days.map(x => `<button class="${x === d ? 'on' : ''}" data-go="courts~${x}">${['Thursday', 'Friday', 'Saturday'][x]}</button>`).join('')}</div>${shareBtn(`Courts · ${dayName}`)}</div></div>
-  <p class="muted" style="margin:0">All divisions at AdventHealth Sports Park at Bluhawk. Pool matches after the first are “rolling”: they start when the previous match ends.</p>
-  <div class="courts">${keys.map(k => `<div class="panel court"><h3>${esc(k)}</h3>${by.get(k).map(m => `<div class="cm"><div class="num muted">${m.rolling ? `#${m.order} rolling` : esc(String(m.timeLabel).replace(/^(THU|FRI|SAT)\s+/i, ''))}</div>
-      <div style="min-width:0"><div style="font-size:12px" class="muted">${esc(m.div.short)} · ${esc(m.name.replace(new RegExp('^' + m.div.age + '\\s*(D\\d\\s*)?', 'i'), ''))}</div>
-      <div>${m.a ? tlink(m.a, m.div.age, m.winner === m.a ? 'w' : '') : `<span class="tbd muted">${esc(seedTxt(m.sa) || 'TBD')}</span>`} <span class="muted">vs</span> ${m.b ? tlink(m.b, m.div.age, m.winner === m.b ? 'w' : '') : `<span class="tbd muted">${esc(seedTxt(m.sb) || 'TBD')}</span>`}</div>
-      ${m.sets?.length ? `<div class="sets" style="text-align:left">${esc(setsTxt(m.sets))}</div>` : ''}</div></div>`).join('')}</div>`).join('')}</div>
+  const shown = keys.filter(k => !pick || k === pick);
+  const rowsFor = list => {
+    if (mode !== 'now') return list;
+    const live = list.filter(m => m.status === 'live');
+    return [...live, ...list.filter(m => m.status === 'upcoming').slice(0, live.length ? 1 : 2)];
+  };
+  setTitle(`Courts · ${DAYLONG[d]}`);
+  main.innerHTML = `<div class="spread">${h2('By court', 'style="font-size:36px"')}
+    <div class="row"><div class="seg" role="group" aria-label="Day">${days.map(x => `<a class="${x === d ? 'on' : ''}" href="${esc(hrefFor('courts~' + x))}" data-go="courts~${x}">${DAYLONG[x]}</a>`).join('')}</div>${shareBtn(`Courts · ${DAYLONG[d]}`)}</div></div>
+  <div class="row"><div class="seg" role="group" aria-label="What to show"><button class="${mode === 'all' ? 'on' : ''}" data-cmode="all" aria-pressed="${mode === 'all'}">Whole day</button><button class="${mode === 'now' ? 'on' : ''}" data-cmode="now" aria-pressed="${mode === 'now'}">Now &amp; next</button></div>
+    <label class="row" style="gap:6px"><span class="label">Court</span><select id="courtpick"><option value="">All courts</option>${keys.map(k => `<option ${k === pick ? 'selected' : ''}>${esc(k)}</option>`).join('')}</select></label></div>
+  <p class="muted" style="margin:0">All divisions at AdventHealth Sports Park at Bluhawk. Times are Central. Pool matches after the first are “rolling”: they start when the previous match ends, so their times are estimates (≈).</p>
+  <div class="courts">${shown.map(k => { const list = rowsFor(by.get(k)); return `<div class="panel court"><h3>${esc(k)}</h3>${list.length ? list.map(m => `<div class="cm ${m.status === 'live' ? 'is-live' : ''}"><div class="num muted">${m.rolling ? `≈${clock(m.est)}<br><span style="font-size:11.5px">#${m.order} rolling</span>` : esc(m.timeLabel)}</div>
+      <div style="min-width:0"><div style="font-size:12px" class="muted">${esc(m.div.short)} · ${esc(shortName(m.name, m.div))}</div>
+      <div>${m.a ? tlink(m.a, m.div.age, m.winner === m.a ? 'w' : '') : `<span class="tbd muted">${esc(slotSource(m.div, m.tab, m.sa) || seedTxt(m.sa) || 'TBD')}</span>`} <span class="muted">vs</span> ${m.b ? tlink(m.b, m.div.age, m.winner === m.b ? 'w' : '') : `<span class="tbd muted">${esc(slotSource(m.div, m.tab, m.sb) || seedTxt(m.sb) || 'TBD')}</span>`}</div>
+      <div class="row" style="gap:6px;margin-top:2px">${pill(m.status)}${m.sets?.length ? `<span class="sets">${esc(setsTxt(setsFor(m, m.a)))}</span>` : ''}${m.status === 'final' && !m.winner ? '<span class="muted">Split</span>' : ''}</div></div></div>`).join('') : '<div class="muted">Nothing in progress or coming up.</div>'}</div>` }).join('')}</div>
   ${footer()}`;
+  $('#courtpick').onchange = e => { store.set('nchvc.court', e.target.value); go(current, false, true) };
+}
+
+function viewHelp() {
+  setTitle('How it works');
+  main.innerHTML = `<div class="help" style="display:flex;flex-direction:column;gap:16px">
+  <div>${h2('How the weekend works', 'style="font-size:34px"')}<p class="unofficial">This is an unofficial viewer that copies the official NCHVC bracket sheets every few minutes. The rules below are summarized from the official sheets; if anything differs, the official sheets win.</p></div>
+  <section class="panel"><h3 style="font-size:22px;margin-bottom:8px">Thursday to Saturday</h3><ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px">
+    <li><b>Thursday: pool play.</b> Teams play everyone in a pool of 3 or 4. Each pool match is 2 sets, so a match can end 2–0 or split 1–1. Finishing position decides Friday's bracket.</li>
+    <li><b>Friday: brackets.</b> Top pool finishers go to the <b>Gold Ball</b> brackets (named by class, like 8A and 7A). Teams that lose there drop to a consolation bracket (<b>Copper</b> or <b>Bronze</b>). Pool last-place teams play <b>Iron</b> pools.</li>
+    <li><b>Saturday: finals.</b> Each Gold Ball winner plays for the <b>Undisputed</b> national title (the “Championship” tab, called GBSS on the sheets). Runners-up play for <b>Silver</b>. Consolation brackets finish with 1st, 3rd, 5th and 7th place games.</li></ol></section>
+  <section class="panel"><h3 style="font-size:22px;margin-bottom:8px">Words you'll see</h3><dl>
+    <dt>Rolling</dt><dd>The match starts as soon as the previous match on that court ends. Only the first match on a court has a set time; this site shows an estimate (≈).</dd>
+    <dt>Split</dt><dd>A 2-set pool match where each team won one set.</dd>
+    <dt>Sets W–L</dt><dd>Sets won and lost in pool play.</dd>
+    <dt>+/-</dt><dd>Point differential: points scored minus points allowed.</dd>
+    <dt>8A, 7A, 6A…</dt><dd>Gold Ball bracket classes. Each class crowns its own Gold Ball winner.</dd>
+    <dt>“8A #1”</dt><dd>A bracket seed. Before teams are known, the site shows where the spot comes from (for example “Pool A 1st”).</dd>
+    <dt>Undisputed / GBSS</dt><dd>The Gold Ball winners meet for the division's overall title.</dd>
+    <dt>D1, D2…</dt><dd>Divisions within an age group. Some age groups play pools together, and the finish decides the division.</dd>
+    <dt>Home / H</dt><dd>The first-listed (pool) or top (bracket) team. ${HOME} ${AWAY}</dd>
+    <dt>Best of 3 / 5</dt><dd>Bracket matches are best of 3 (third set to 15) unless marked best of 5.</dd></dl></section>
+  <section class="panel"><h3 style="font-size:22px;margin-bottom:8px">Rules that affect the bracket</h3><ul style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px">
+    <li><b>Team USA:</b> Team USA (or a team with USA in its name) can't eliminate a team from the top division or trophy contention. In pools it advances as the last-place finisher. If Team USA wins a bracket match, the other team still advances; this site marks those “advances (Team USA rule)”.</li>
+    <li><b>Pool ties, two teams:</b> head-to-head result, then head-to-head point differential, then overall point differential, then a coin flip.</li>
+    <li><b>Pool ties, three teams:</b> head-to-head point differential among the tied teams, then set percentage, then overall point differential, then a coin flip.</li>
+    <li><b>Changes happen.</b> The organizers ask families to re-check brackets every evening and morning.</li></ul></section>
+  ${footer()}</div>`;
+}
+
+// ---------- calendar export ----------
+function downloadIcs(t) {
+  const ms = teamMatches(t).filter(m => m.status !== 'final' && m.mins != null);
+  if (!ms.length) { toast('No upcoming matches with a time yet'); return }
+  const base = Date.parse(startDate() + 'T00:00:00Z');
+  const stamp = d => new Date(d).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  const lines = ['BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//nchvc-viewer//EN', 'CALSCALE:GREGORIAN'];
+  for (const m of ms) {
+    const start = base + m.day * 86400e3 + (m.mins + 5 * 60) * 60e3;  // Central (UTC-5 in October) -> UTC
+    const opp = (m.a === t.name ? m.b : m.a) || 'TBD';
+    lines.push('BEGIN:VEVENT', `UID:nchvc-${slug(t.key + '-' + m.name + '-' + m.day + '-' + m.mins)}@nchvc-viewer`, `DTSTAMP:${stamp(Date.now())}`,
+      `DTSTART:${stamp(start)}`, `DTEND:${stamp(start + 60 * 60e3)}`,
+      `SUMMARY:${(m.rolling ? '≈ ' : '') + t.name} vs ${opp}`.replace(/[,;]/g, ' '),
+      `LOCATION:${court(m.court)} · AdventHealth Sports Park at Bluhawk`.replace(/[,;]/g, ' '),
+      `DESCRIPTION:${m.name}${m.rolling ? ' (rolling start; estimated time)' : ''}. Check the official bracket for changes: ${urlFor('t-' + t.key)}`.replace(/[,;]/g, ' '), 'END:VEVENT');
+  }
+  lines.push('END:VCALENDAR');
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([lines.join('\r\n')], { type: 'text/calendar' }));
+  a.download = `${slug(t.name)}-nchvc.ics`; document.body.appendChild(a); a.click(); a.remove();
 }
 
 // ---------- routing ----------
-// Hosted site: clean paths (/team/..., /d/<division>/<tab>, /courts/fri); demo + artifact: #route
+// Hosted site: clean paths (/team/…, /d/<division>/<tab>[/<team>], /courts/fri, /mine, /help); demo + artifact: #route
 const DAYSLUG = ['thu', 'fri', 'sat'];
 function routeToPath(route) {
-  const [h, sub] = route.split('~');
-  if (h.startsWith('d-')) return '/d/' + h.slice(2) + (sub ? '/' + sub : '');
+  const [h, sub, hl] = route.split('~');
+  if (h.startsWith('d-')) return '/d/' + h.slice(2) + (sub ? '/' + sub : '') + (hl ? '/' + hl : '');
   if (h.startsWith('t-')) return '/team/' + h.slice(2);
   if (h === 'courts') return '/courts' + (sub != null && DAYSLUG[+sub] ? '/' + DAYSLUG[+sub] : '');
+  if (h === 'mine' || h === 'help') return '/' + h;
   return '/';
 }
 function pathToRoute(path) {
-  const s = path.split('/').filter(Boolean).map(x => { try { return decodeURIComponent(x) } catch { return x } });
-  if (s[0] === 'd' && s[1]) return 'd-' + s[1] + (s[2] ? '~' + s[2] : '');
+  const s = path.toLowerCase().split('/').filter(Boolean).map(x => { try { return decodeURIComponent(x) } catch { return x } });
+  if (s[0] === 'd' && s[1]) return 'd-' + s[1] + (s[2] ? '~' + s[2] : '') + (s[3] ? '~' + s[3] : '');
   if (s[0] === 'team' && s[1]) return 't-' + s[1];
   if (s[0] === 'courts') { const i = DAYSLUG.indexOf(s[1]); return 'courts' + (i >= 0 ? '~' + i : '') }
-  return null;
+  if (s[0] === 'mine' || s[0] === 'help') return s[0];
+  return s.length ? 'notfound' : null;
 }
 const routeUrl = route => LIVE ? routeToPath(route) : location.pathname + (route === 'home' ? '' : '#' + route);
 const urlFor = route => location.origin + routeUrl(route);
@@ -531,81 +943,131 @@ function routeFromUrl() {
   return (LIVE && pathToRoute(location.pathname)) || 'home';
 }
 let current = 'home';
-function go(route, push = true, keepScroll = false) {
+function go(route, push = true, keepScroll = false, fromPoll = false) {
   current = route;
   if (push) {
     store.set('nchvc.route', route);
     try { const u = routeUrl(route); if (u !== location.pathname + location.hash) history.pushState({ route }, '', u) } catch {}
   }
-  const [head, sub] = route.split('~');
+  const [head, sub, hl] = route.split('~');
   if (!keepScroll) window.scrollTo({ top: 0 });
-  if (head.startsWith('d-')) { const dv = divisions.find(d => d.id === head.slice(2)); if (dv) { renderStrip(dv.id); return viewDivision(dv, sub) } }
-  if (head.startsWith('t-')) { renderStrip(''); return viewTeam(head.slice(2)) }
-  if (head === 'courts') { renderStrip('courts'); return viewCourts(sub != null ? +sub : undefined) }
-  renderStrip(''); viewHome();
+  if (head.startsWith('d-')) {
+    const dv = divisions.find(d => d.id === head.slice(2));
+    if (dv) { renderStrip(dv.id); viewDivision(dv, sub, hl) }
+    else { renderStrip(''); setTitle('Division not found'); main.innerHTML = `<div class="panel">${h2('Division not found', 'style="font-size:24px"')}<p>That division isn't on the official sheets. Pick one above.</p></div>` }
+  } else if (head.startsWith('t-')) { renderStrip(''); viewTeam(head.slice(2), '', fromPoll) }
+  else if (head === 'courts') { renderStrip('courts'); viewCourts(sub != null ? +sub : undefined) }
+  else if (head === 'mine') { renderStrip('mine'); viewMine() }
+  else if (head === 'help') { renderStrip('help'); viewHelp() }
+  else if (head === 'notfound') { renderStrip(''); setTitle('Page not found'); main.innerHTML = `<div class="panel">${h2('Page not found', 'style="font-size:24px"')}<p>Try the search box, or <a href="/" data-go="home">go to the overview</a>.</p></div>` }
+  else { renderStrip(''); viewHome() }
+  renderFresh();
+  if (push && !fromPoll) main.querySelector('h2')?.focus({ preventScroll: true });
 }
 document.addEventListener('click', e => {
+  if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;  // let new-tab clicks through
+  const s = e.target.closest('[data-share]'); if (s) { e.preventDefault(); return share(s.dataset.share) }
+  const f = e.target.closest('[data-follow]');
+  if (f) {
+    const k = f.dataset.follow, list = following(), on = list.includes(k);
+    store.set('nchvc.follow', JSON.stringify(on ? list.filter(x => x !== k) : [...list, k]));
+    toast(on ? 'Removed from My teams' : 'Added to My teams'); return go(current, false, true);
+  }
+  const ic = e.target.closest('[data-ics]'); if (ic) { const t = teamIdx.get(ic.dataset.ics); if (t) downloadIcs(t); return }
+  const bv = e.target.closest('[data-bview]'); if (bv) { store.set('nchvc.bview', bv.dataset.bview); return go(current, false, true) }
+  const cm = e.target.closest('[data-cmode]'); if (cm) { store.set('nchvc.cmode', cm.dataset.cmode); return go(current, false, true) }
   const t = e.target.closest('[data-team]');
-  if (t) { e.preventDefault(); return go('t-' + t.dataset.team) }
+  if (t) { e.preventDefault(); closeSugg(); q.value = ''; return go('t-' + t.dataset.team) }
   const g = e.target.closest('[data-go]');
   if (g) { e.preventDefault(); go(g.dataset.go) }
 });
-$('#brand').addEventListener('click', () => go('home'));
-document.addEventListener('click', e => { const s = e.target.closest('[data-share]'); if (s) { e.preventDefault(); share(s.dataset.share) } });
 window.addEventListener('popstate', e => go(e.state?.route || routeFromUrl(), false));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { $('#sharebox').hidden = true; closeSugg() } });
 
-// ---------- search ----------
+// ---------- search (ARIA combobox) ----------
 const q = $('#q'), sugg = $('#sugg');
 let hits = [], sel = 0;
+function closeSugg() { sugg.hidden = true; q.setAttribute('aria-expanded', 'false'); q.removeAttribute('aria-activedescendant') }
 function renderSugg() {
   const v = q.value.trim().toLowerCase();
-  if (!v) { sugg.hidden = true; return }
-  hits = teams.filter(t => t.name.toLowerCase().includes(v)).sort((a, b) => a.name.toLowerCase().indexOf(v) - b.name.toLowerCase().indexOf(v) || a.name.localeCompare(b.name)).slice(0, 40);
+  if (!v) { closeSugg(); return }
+  hits = teams.filter(t => t.name.toLowerCase().includes(v)).sort((a, b) => a.name.toLowerCase().indexOf(v) - b.name.toLowerCase().indexOf(v) || a.name.localeCompare(b.name) || a.age.localeCompare(b.age)).slice(0, 40);
   sel = Math.min(sel, Math.max(hits.length - 1, 0));
-  sugg.innerHTML = hits.length ? hits.map((t, i) => `<button class="${i === sel ? 'on' : ''}" data-team="${esc(t.key)}"><span>${esc(t.name)}</span><span class="muted">${esc(t.age)} · ${esc([...t.divs].map(id => divisions.find(d => d.id === id).short).join(', '))}</span></button>`).join('')
-    : `<div class="empty">No team matches “${esc(q.value)}”. Try part of the name or a state like (TX).</div>`;
-  sugg.hidden = false;
+  sugg.innerHTML = hits.length ? hits.map((t, i) => `<li role="option" id="opt-${i}" aria-selected="${i === sel}" data-team="${esc(t.key)}"><span>${esc(t.name)}</span><span class="muted">${esc(t.age)} · ${esc([...t.divs].map(id => divisions.find(d => d.id === id).short).join(', '))}</span></li>`).join('')
+    : `<li class="empty">No team matches “${esc(q.value)}”. Try part of the name or a state like (TX).</li>`;
+  sugg.hidden = false; q.setAttribute('aria-expanded', 'true');
+  if (hits.length) { q.setAttribute('aria-activedescendant', 'opt-' + sel); $('#opt-' + sel)?.scrollIntoView({ block: 'nearest' }) }
 }
 q.addEventListener('input', () => { sel = 0; renderSugg() });
 q.addEventListener('keydown', e => {
   if (e.key === 'ArrowDown') { sel = Math.min(sel + 1, hits.length - 1); renderSugg(); e.preventDefault() }
   else if (e.key === 'ArrowUp') { sel = Math.max(sel - 1, 0); renderSugg(); e.preventDefault() }
-  else if (e.key === 'Enter' && hits[sel]) { go('t-' + hits[sel].key); q.value = ''; sugg.hidden = true; q.blur() }
-  else if (e.key === 'Escape') { sugg.hidden = true }
+  else if (e.key === 'Enter' && hits[sel] && !sugg.hidden) { go('t-' + hits[sel].key); q.value = ''; closeSugg(); q.blur() }
+  else if (e.key === 'Escape') { closeSugg() }
 });
-sugg.addEventListener('click', () => { q.value = ''; sugg.hidden = true });
-document.addEventListener('click', e => { if (!e.target.closest('.search')) sugg.hidden = true });
+q.addEventListener('focusout', () => setTimeout(() => { if (!$('.search').contains(document.activeElement)) closeSugg() }, 150));
+document.addEventListener('click', e => { if (!e.target.closest('.search')) closeSugg() });
 
-// ---------- boot ----------
-const LIVE = !D;  // hosted site: fetch data.json and poll for updates
+// ---------- boot & live updates ----------
 async function fetchData() {
   const r = await fetch('/data.json', { cache: 'no-cache' });  // revalidates with ETag: unchanged data costs a 304
   if (!r.ok) throw new Error('HTTP ' + r.status);
-  return r.json();
+  const d = await r.json();
+  if (!Array.isArray(d?.sheets) || d.sheets.length < 5 || !d.generated) throw new Error('incomplete data');
+  return d;
 }
 function startApp() {
   buildModel();
   let start = routeFromUrl();
-  if (start === 'home' && !location.hash && (!LIVE || location.pathname === '/')) start = store.get('nchvc.route') || 'home';  // reopen where you left off
+  if (start === 'home' && !location.hash && (!LIVE || location.pathname === '/')) {  // reopen where you left off, if it still exists
+    const saved = store.get('nchvc.route') || 'home';
+    const ok = saved.startsWith('d-') ? divisions.some(d => d.id === saved.slice(2).split('~')[0]) : saved.startsWith('t-') ? teamIdx.has(saved.slice(2)) : true;
+    start = ok ? saved : 'home';
+  }
   go(start, false);
   try { history.replaceState({ route: current }, '', routeUrl(current)) } catch {}  // current: a renamed team may have been redirected
 }
-if (!LIVE) startApp();
+// re-render after an update without losing your place (vertical and sideways scroll)
+let pendingRender = false;
+function rerender() {
+  if (document.activeElement === q && q.value) { pendingRender = true; return }
+  const keep = [...document.querySelectorAll('.bwrap, .tabs, .strip-row')].map(el => el.scrollLeft);
+  go(current, false, true, true);
+  document.querySelectorAll('.bwrap, .tabs, .strip-row').forEach((el, i) => { if (keep[i] != null) el.scrollLeft = keep[i] });
+}
+q.addEventListener('blur', () => { if (pendingRender) { pendingRender = false; setTimeout(rerender, 200) } });
+if (!LIVE) { startApp(); setInterval(renderFresh, 30000) }
 else {
+  let retry = 5000;
+  const boot = () => fetchData().then(d => { D = d; startApp() }).catch(() => {
+    main.innerHTML = `<div class="panel" role="status">Can't reach the bracket data right now. Retrying automatically… <button class="btn" id="retrynow">Try now</button></div>`;
+    $('#retrynow').onclick = boot; setTimeout(() => { if (!D) boot() }, retry); retry = Math.min(retry * 2, 60000);
+  });
   main.innerHTML = '<div class="panel muted">Loading the latest brackets…</div>';
-  fetchData().then(d => { D = d; startApp() })
-    .catch(() => { main.innerHTML = '<div class="panel">Could not load bracket data. Check your connection and reload the page.</div>' });
+  boot();
   async function poll() {
-    if (document.hidden || !D) return;
+    if (document.hidden) return;
+    if (!D) return boot();
     try {
       const d = await fetchData();
-      if (d.generated === D.generated) return;
-      D = d; buildModel();
-      if (document.activeElement !== q) go(current, false, true);  // re-render in place, keep scroll
-    } catch {}
+      pollFails = 0;
+      if (d.generated !== D.generated) {
+        const prev = D;
+        try { D = d; buildModel() } catch (err) { D = prev; buildModel(); console.warn('update skipped', err); renderFresh(); return }
+        rerender();
+      }
+    } catch { pollFails++ }
+    renderFresh();
   }
   setInterval(poll, 60000);
-  document.addEventListener('visibilitychange', poll);  // check right away when the phone/tab comes back
+  setInterval(renderFresh, 30000);
+  document.addEventListener('visibilitychange', poll);   // check right away when the phone/tab comes back
+  window.addEventListener('online', poll);
+  // a newer version of the page itself: offer a reload
+  setInterval(async () => {
+    if (document.hidden || BUILD.startsWith('__')) return;
+    try { const v = (await (await fetch('/version.txt', { cache: 'no-cache' })).text()).trim(); if (v && v !== BUILD && !$('#updatebar').innerHTML) $('#updatebar').innerHTML = `<div class="update-bar">This site was just improved. <button onclick="location.reload()">Reload</button></div>` } catch {}
+  }, 5 * 60000);
 }
 })();
 </script>

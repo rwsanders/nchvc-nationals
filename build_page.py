@@ -4,18 +4,21 @@ python build_page.py                       data.json      -> nchvc_nationals.htm
 python build_page.py demo_data.json demo   demo data      -> nchvc_demo.html (embedded, with DEMO banner)
 python build_page.py --site                -> site/ (index.html loads data.json live; demo.html; Azure SWA config)
 """
-import json, os, shutil, sys
+import hashlib, json, os, shutil, sys
 
 here = os.path.dirname(os.path.abspath(__file__))
 tpl = open(os.path.join(here, "page_template.html"), encoding="utf-8").read()
+BUILD = hashlib.sha256(tpl.encode()).hexdigest()[:12]  # open pages compare this with /version.txt and offer a reload
 DEMO_BANNER = ('<div style="background:var(--live);color:var(--surface);text-align:center;padding:8px 16px;'
                'font-weight:700;letter-spacing:.04em">DEMO: made-up scores to preview how results will look. '
                'Not real results.</div>')
 SWA_CONFIG = {
-    "routes": [{"route": "/data.json", "headers": {"Cache-Control": "no-cache, max-age=0"}}],
+    "routes": [{"route": "/data.json", "headers": {"Cache-Control": "no-cache, max-age=0"}},
+               {"route": "/version.txt", "headers": {"Cache-Control": "no-cache, max-age=0"}},
+               {"route": "/index.html", "headers": {"Cache-Control": "no-cache, max-age=0"}}],
     # /team/..., /d/..., /courts/... are page views handled in the browser
     "navigationFallback": {"rewrite": "/index.html",
-                           "exclude": ["/data.json", "/demo.html", "/staticwebapp.config.json", "*.{json,js,css,png,ico,svg,txt}"]},
+                           "exclude": ["/data.json", "/demo.html", "/version.txt", "/staticwebapp.config.json", "*.{json,js,css,png,ico,svg,txt}"]},
     "globalHeaders": {"X-Content-Type-Options": "nosniff"},
     "mimeTypes": {".json": "application/json"},
 }
@@ -23,7 +26,7 @@ SWA_CONFIG = {
 
 def render(data, demo=False):
     blob = "null" if data is None else json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", r"<\/")
-    page = tpl.replace("__DATA__", blob)
+    page = tpl.replace("__DATA__", blob).replace("__BUILD__", BUILD)
     if demo:
         page = page.replace("<title>NCHVC Nationals 2026</title>", "<title>NCHVC Nationals Demo</title>")
         page = page.replace("<!--BANNER-->", DEMO_BANNER)
@@ -57,6 +60,7 @@ if "--site" in sys.argv:
     if os.path.exists(os.path.join(here, "demo_data.json")):
         write(os.path.join(site, "demo.html"), standalone(render(load("demo_data.json"), demo=True)))
     write(os.path.join(site, "staticwebapp.config.json"), json.dumps(SWA_CONFIG, indent=2))
+    write(os.path.join(site, "version.txt"), BUILD)
 else:
     src = sys.argv[1] if len(sys.argv) > 1 else "data.json"
     demo = len(sys.argv) > 2 and sys.argv[2] == "demo"

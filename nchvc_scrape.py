@@ -12,6 +12,8 @@ INDEX_ID = "1Uq8uFxIn-y3YwMAzIwCft1l4zgfFA0E7rKGuIBQvo5U"
 EXPORT = "https://docs.google.com/spreadsheets/d/{}/export?format=xlsx"
 SHEET_URL = "https://docs.google.com/spreadsheets/d/{}/edit"
 STALE = []  # sheet ids served from cache because the download failed
+ODD_TIMES = set()  # time cells in a format we could not normalize (printed as a warning)
+WIN_MARK = re.compile(r"(?i)\s*(w|win|won|winner|ff|forfeit|def\.?)\s*")
 DAYS = {"Thursday", "Friday", "Saturday", "Sunday", "Wednesday"}
 
 
@@ -24,7 +26,7 @@ def fetch(sheet_id, cache_dir, offline=False, tries=4):
     for i in range(tries):
         try:
             req = urllib.request.Request(EXPORT.format(sheet_id), headers={"User-Agent": "Mozilla/5.0"})
-            data = urllib.request.urlopen(req, timeout=120).read()
+            data = urllib.request.urlopen(req, timeout=60).read()
             zipfile.ZipFile(io.BytesIO(data)).testzip()  # reject truncated downloads
             with open(path, "wb") as f:
                 f.write(data)
@@ -61,6 +63,15 @@ def fmt_time(v):
     m = re.fullmatch(r"(\d{1,2}):(\d{2})(?::\d{2})?", t)
     if m:
         return fmt_time(dt.time(int(m[1]) % 24, int(m[2])))
+    # hand-typed variants: "FRI- 8:00 AM", "SAT1:00 PM", "Fri 9:00am" -> "FRI 8:00 AM"
+    m = re.fullmatch(r"(?i)(thu|fri|sat|sun)[a-z]*[\s\-:.,]*(\d{1,2}):(\d{2})\s*([ap])\.?m?\.?", t)
+    if m:
+        return f"{m[1].upper()} {int(m[2])}:{m[3]} {m[4].upper()}M"
+    m = re.fullmatch(r"(?i)(\d{1,2}):(\d{2})\s*([ap])\.?m?\.?", t)
+    if m:
+        return f"{int(m[1])}:{m[2]} {m[3].upper()}M"
+    if t and t.lower() != "rolling":
+        ODD_TIMES.add(t)
     return t
 
 
@@ -191,23 +202,35 @@ def parse_bracket_tab(g):
         def slot(rows, default):
             # the seed label (col c-1) marks the slot row; it is filled in even before teams are known
             sr = next((x for x in rows if g.t(x, c - 1)), default)
-            score = next((g.t(x, c) for x in (sr + 1, sr + 2) if parse_sets(g.t(x, c))), "")
-            return {"seed": g.t(sr, c - 1), "team": g.t(sr, c), "score": score}
+            below = [g.t(x, c) for x in (sr + 1, sr + 2)]
+            score = next((x for x in below if parse_sets(x)), "")
+            # a bare "w" (or forfeit note) under a team means it won without a reported score
+            mark = not score and any(WIN_MARK.fullmatch(x) for x in below if x)
+            return {"seed": g.t(sr, c - 1), "team": g.t(sr, c), "score": score, "mark": mark}
         top, bot = slot((r - 3, r - 4, r - 5), r - 3), slot((r + 5, r + 4, r + 6), r + 5)
-        loser_to = loser_name = ""
-        near = [(abs(rr - r), rr, cc) for (rr, cc), v in g.v.items()
-                if s(v) == "Losing team to" and c + 2 <= cc <= c + 4 and abs(rr - r) <= 6]
-        if near:
-            _, rr, cc = min(near)
-            loser_to, loser_name = g.t(rr + 1, cc), g.t(rr + 2, cc)
-            if loser_name.endswith("Below"):  # e.g. "7th Place Game Below"
-                loser_to, loser_name = loser_name.replace(" Below", ""), ""
-            if loser_to.endswith("Below"):
-                loser_to = loser_to.replace(" Below", "")
+        # "<Division> Champion(s)" box beside a final, with the champion's name two rows down
+        champ = next((g.t(rr + 2, cc) for (rr, cc), v in sorted(g.v.items())
+                      if "champion" in s(v).lower() and r - 3 <= rr <= r + 1 and c + 2 <= cc <= c + 4), "")
         blocks.append({"row": r, "col": c, "day": g.t(r, c), "time": fmt_time(g(r + 1, c)), "court": g.t(r + 2, c),
                        "name": name, "bestOf": int(best[1]) if best else 3, "top": top, "bottom": bot,
-                       "loserTo": loser_to, "loser": loser_name})
-    # winners: a team that shows up in a later-round slot, else the reported loser, else set count
+                       "loserTo": "", "loser": "", "champ": champ})
+    # Each "Losing team to" box belongs to exactly one match: the closest block with the box just to its
+    # right (normal brackets) or a few columns to its left (mirrored consolation brackets).
+    for (rr, cc), v in sorted(g.v.items()):
+        if s(v) != "Losing team to":
+            continue
+        cands = [(abs(rr - b["row"]), b["col"] > cc, b) for b in blocks
+                 if abs(rr - b["row"]) <= 6 and (b["col"] + 2 <= cc <= b["col"] + 4 or b["col"] - 8 <= cc <= b["col"] - 2)]
+        if not cands:
+            continue
+        b = min(cands, key=lambda x: (x[1], x[0]))[2]  # a match to the box's left (normal layout) wins over a mirrored one
+        loser_to, loser_name = g.t(rr + 1, cc), g.t(rr + 2, cc)
+        if loser_name.endswith("Below"):  # e.g. "7th Place Game Below"
+            loser_to, loser_name = loser_name.replace(" Below", ""), ""
+        b["loserTo"], b["loser"] = loser_to.replace(" Below", ""), loser_name
+    # Who WON comes from where the result is written: the score (winner's points first) or a "w" goes
+    # under the winner. Who ADVANCES comes from the bracket path (later-round slots / "Losing team to").
+    # They differ under the Team USA rule: Team USA can win a match while the opponent advances.
     later = {}
     for b in blocks:
         for sl in (b["top"], b["bottom"]):
@@ -217,19 +240,30 @@ def parse_bracket_tab(g):
         t, u = b["top"]["team"], b["bottom"]["team"]
         sets = parse_sets(b["top"]["score"]) or parse_sets(b["bottom"]["score"])
         b["sets"] = sets
-        w = None
+        w = adv = None
         if t and u:
+            # 1) the slot that holds the result
+            has_t = bool(b["top"]["score"]) or b["top"]["mark"]
+            has_u = bool(b["bottom"]["score"]) or b["bottom"]["mark"]
+            if has_t != has_u and (b["top"]["mark"] or b["bottom"]["mark"] or match_status(sets, b["bestOf"]) == "final"):
+                w = t if has_t else u
+            # 2) the champion box beside a final
+            if not w and b["champ"] in (t, u):
+                w = b["champ"]
+            # 3) the bracket path
             if b["loser"] in (t, u):
-                w = u if b["loser"] == t else t
+                adv = u if b["loser"] == t else t
             elif any(cc > b["col"] for cc in later.get(t, [])) and not any(cc > b["col"] for cc in later.get(u, [])):
-                w = t
+                adv = t
             elif any(cc > b["col"] for cc in later.get(u, [])) and not any(cc > b["col"] for cc in later.get(t, [])):
-                w = u
-            elif sets and match_status(sets, b["bestOf"]) == "final":
-                # score is written under the winner, winner's points first
-                w = t if b["top"]["score"] else u
+                adv = u
+            if not w:
+                w = adv  # result not readable, but the sheet already moved a team on
         b["winner"] = w
+        b["advances"] = adv if adv and w and adv != w else ""
+        b["noScore"] = bool(w) and not sets
         b["status"] = "final" if w else ("live" if sets else "upcoming")
+        del b["champ"]
     # cluster into sub-brackets by overlapping vertical span
     spans = sorted(blocks, key=lambda b: b["row"])
     clusters = []
@@ -291,9 +325,9 @@ def parse_ref(g):
 
 
 # ---------------------------------------------------------------- index
-def parse_index(path):
+def parse_index(path, tab="Nationals Index"):
     wb = openpyxl.load_workbook(path)
-    ws = wb["Nationals Index"]
+    ws = wb[tab]
     links, info, gender = [], {}, None
     for row in ws.iter_rows():
         for c in row:
@@ -303,7 +337,10 @@ def parse_index(path):
             href = c.hyperlink.target if c.hyperlink else ""
             m = re.search(r"/d/([\w-]+)", href or "")
             if m and "spreadsheets" in href:
-                links.append({"label": re.sub(r"\s+", " ", v), "id": m[1], "gender": gender})
+                label = re.sub(r"\s+", " ", v)
+                g = re.match(r"\s*([GB])(\d+u|JV)", label, re.I)  # the label itself says Girls/Boys
+                links.append({"label": label, "id": m[1],
+                              "gender": {"G": "Girls", "B": "Boys"}[g[1].upper()] if g else gender})
             elif href:
                 info[v] = href
             elif v.startswith("REPORT SCORES"):
@@ -330,7 +367,7 @@ def parse_workbook(path):
                 txt = g.t(r + 1, c)
                 if txt:
                     out["notices"].append(txt.lstrip("● ").strip())
-        elif "Pools" in title:
+        elif "pools" in title.lower():
             out["pools"] += parse_pools(g)
         else:
             b = parse_bracket_tab(g)
@@ -340,6 +377,36 @@ def parse_workbook(path):
 
 
 AGE_RE = re.compile(r"([GB])(\d+u|JV)", re.I)
+MONTHS = ["january", "february", "march", "april", "may", "june", "july", "august", "september", "october",
+          "november", "december"]
+
+
+def start_date(title, year):
+    """'NATIONALS Brackets- October 15th-17th- Overland Park, KS' -> '2026-10-15' (or '' if not found)"""
+    m = re.search(r"(?i)(" + "|".join(MONTHS) + r")\s+(\d{1,2})", title)
+    return f"{year}-{MONTHS.index(m[1].lower()) + 1:02d}-{int(m[2]):02d}" if m else ""
+
+
+def warn_near_duplicates(sheets):
+    """Flag team names in one age group that look like typo'd copies of each other (likely sheet typos)."""
+    import difflib
+    by_age = {}
+    for s in sheets:
+        for p in s["pools"]:
+            for t in p["teams"]:
+                if t["team"] and not re.fullmatch(r"Team \d+", t["team"]):
+                    by_age.setdefault(s["age"], set()).add(t["team"])
+    # "- A"/"- B", "1"/"2", "JV", "II" and colours name different teams from one club, not typos
+    words = {"jv", "i", "ii", "iii", "iv", "black", "white", "red", "blue", "gold", "silver", "green", "teal",
+             "purple", "orange", "navy", "royal", "maroon", "gray", "grey", "pink", "yellow", "usa"}
+    ident = lambda n: sorted(w for w in re.findall(r"[a-z0-9]+", n.lower()) if w.isdigit() or len(w) == 1 or w in words)
+    for age, names in by_age.items():
+        names = sorted(names)
+        for i, x in enumerate(names):
+            for y in names[i + 1:]:
+                ix = re.sub(r"[^a-z0-9]", "", x.lower()); iy = re.sub(r"[^a-z0-9]", "", y.lower())
+                if ix != iy and difflib.SequenceMatcher(None, ix, iy).ratio() > 0.92 and ident(x) == ident(y):
+                    print(f"  ? {age}: similar team names {x!r} / {y!r}", file=sys.stderr)
 
 
 def main():
@@ -347,31 +414,54 @@ def main():
     ap.add_argument("--cache", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), ".cache"))
     ap.add_argument("--out", default=os.path.join(os.path.dirname(os.path.abspath(__file__)), "data.json"))
     ap.add_argument("--offline", action="store_true", help="reuse cached xlsx files")
+    ap.add_argument("--previous", help="last good data.json: a sheet that fails to parse keeps its previous data")
+    ap.add_argument("--index-tab", default="Nationals Index",
+                    help='index tab to read ("OLD Nationals Index" = the previous year, completed; useful for testing)')
     a = ap.parse_args()
     os.makedirs(a.cache, exist_ok=True)
 
     t0 = time.time()
-    links, info = parse_index(fetch(INDEX_ID, a.cache, a.offline))
+    links, info = parse_index(fetch(INDEX_ID, a.cache, a.offline), a.index_tab)
     print(f"index: {len(links)} division sheets")
     with ThreadPoolExecutor(6) as ex:
         paths = list(ex.map(lambda l: fetch(l["id"], a.cache, a.offline), links))
+    prev = {}
+    if a.previous and os.path.exists(a.previous):
+        try:
+            prev = {s["id"]: s for s in json.load(open(a.previous, encoding="utf-8")).get("sheets", [])}
+        except Exception as e:  # noqa: BLE001
+            print(f"  ! could not read --previous: {e}", file=sys.stderr)
     sheets = []
     for l, p in zip(links, paths):
-        d = parse_workbook(p)
+        try:
+            d = parse_workbook(p)
+        except Exception as e:  # noqa: BLE001 - one odd workbook must not take the whole site down
+            print(f"  ! {l['label']}: parse failed ({e!r})", file=sys.stderr)
+            if l["id"] not in prev:
+                raise
+            print("    keeping its previous data", file=sys.stderr)
+            STALE.append(l["id"])
+            sheets.append(prev[l["id"]])
+            continue
         m = AGE_RE.search(l["label"])
         age = (m[1].upper() + m[2]) if m else l["label"]
-        dm = re.search(r"Division (\d)(?:\s*&\s*(\d))?", l["label"])
+        dm = (re.search(r"Division (\d)(?:\s*&\s*(\d))?", l["label"])
+              or re.search(r"\bD(\d)(?:\s*/\s*D?(\d))?\b", l["label"]))
         sheets.append({"id": l["id"], "label": l["label"], "gender": l["gender"], "age": age,
                        "divs": [x for x in (dm.groups() if dm else ()) if x],
                        "kind": "pools" if "POOLS" in l["label"].upper() else "bracket",
                        "url": SHEET_URL.format(l["id"]), **{k: v for k, v in d.items() if k != "ref"}})
         nm = sum(len(c["matches"]) for b in d["brackets"] for c in b["clusters"])
         print(f"  {l['label']:<28} pools={len(d['pools']):2} bracket-matches={nm:3} ref={len(d['ref'])}")
-    data = {"generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
+    warn_near_duplicates(sheets)
+    now = dt.datetime.now(dt.timezone.utc)
+    data = {"generated": now.isoformat(timespec="seconds"), "startDate": start_date(info.get("_title", ""), now.year),
             "source": f"https://docs.google.com/spreadsheets/d/{INDEX_ID}/edit", "info": info, "sheets": sheets,
             "stale": [s["label"] for s in sheets if s["id"] in STALE] + (["Bracket index"] if INDEX_ID in STALE else [])}
     with open(a.out, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
+    if ODD_TIMES:
+        print(f"  ! unrecognized time formats (shown as typed): {sorted(ODD_TIMES)}", file=sys.stderr)
     print(f"wrote {a.out} ({os.path.getsize(a.out)//1024} KB) in {time.time()-t0:.0f}s")
 
 

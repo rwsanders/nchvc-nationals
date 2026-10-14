@@ -47,22 +47,22 @@ jobs:
           key: sheets-${{ github.run_id }}
           restore-keys: sheets-
 
-      - name: Pull sheets
-        run: python nchvc_scrape.py
+      # The data already live is the last good copy: a sheet that fails to parse keeps it,
+      # and the new scrape is compared against it before deploying.
+      - name: Fetch live data
+        run: curl -sf --max-time 30 "$SITE_URL/data.json" -o prev_data.json || echo "no live data yet"
+        env:
+          SITE_URL: https://witty-ground-0124a1610.5.azurestaticapps.net
 
-      - name: Sanity check
-        run: |
-          python - <<'PY'
-          import json
-          d = json.load(open("data.json", encoding="utf-8"))
-          teams = {(s["age"], t["team"]) for s in d["sheets"] for p in s["pools"] if not p["name"].startswith("Iron") for t in p["teams"] if t["team"]}
-          assert len(d["sheets"]) >= 10 and len(teams) >= 150, f"suspicious scrape: {len(d['sheets'])} sheets, {len(teams)} teams"
-          print(f"ok: {len(d['sheets'])} sheets, {len(teams)} teams")
-          PY
+      - name: Pull sheets
+        run: python nchvc_scrape.py --previous prev_data.json
+
+      - name: Sanity check against live data
+        run: python check_data.py data.json prev_data.json
 
       - name: Build site
         run: |
-          python simulate_demo.py
+          python simulate_demo.py || echo "::warning::demo page skipped (simulate_demo.py failed)"
           python build_page.py --site
 
       - name: Deploy to Azure Static Web Apps
