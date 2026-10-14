@@ -73,4 +73,3 @@ jobs:
           action: upload
           app_location: site
           skip_app_build: true
-          skip_api_build: true

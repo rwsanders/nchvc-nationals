@@ -383,7 +383,12 @@ const shortName = (name, dv) => String(name).replace(new RegExp('^' + dv.age + '
 
 const inDiv = (m, dv) => m.div === dv || (m.kind === 'pool' && dv.pools.includes(m.pool));
 const progress = dv => { const ms = all.filter(m => inDiv(m, dv)); return { done: ms.filter(m => m.status === 'final').length, tot: ms.length } };
-const aheadOnCourt = m => all.filter(x => x !== m && x.day === m.day && x.court === m.court && x.mins != null && m.mins != null && x.mins < m.mins && x.status !== 'final').length;
+// matches still to finish before this one on its court; only meaningful once that court has started for the day
+const aheadOnCourt = m => {
+  const court = all.filter(x => x !== m && x.day === m.day && x.court === m.court);
+  if (!court.some(x => x.status !== 'upcoming')) return 0;
+  return court.filter(x => x.mins != null && m.mins != null && x.mins < m.mins && x.status !== 'final').length;
+};
 
 // ---------- scores from a given team's side ----------
 const setsFor = (m, team) => (m.sets || []).map(([x, y]) => m.persp === team ? [x, y] : [y, x]);
