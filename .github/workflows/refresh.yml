@@ -1,10 +1,17 @@
 name: Refresh brackets
 
 on:
+  # All times UTC (Central = UTC-5 in October). GitHub can start scheduled runs a few minutes late.
   schedule:
-    # Tournament week (Oct 14-18): every 5 minutes. GitHub may run these a few minutes late.
-    - cron: "*/5 * 14-18 10 *"
-    # Rest of the year: once a day
+    # Hourly test pulls until tournament morning: Tue Oct 13 7 PM CT -> Thu Oct 15 5 AM CT
+    - cron: "7 * 14 10 *"
+    - cron: "7 0-10 15 10 *"
+    # Tournament: every 5 minutes, Thu Oct 15 6 AM CT -> Sun Oct 18 1 AM CT
+    - cron: "*/5 11-23 15 10 *"
+    - cron: "*/5 * 16-17 10 *"
+    - cron: "*/5 0-5 18 10 *"
+    # Wind-down: hourly for the rest of Sunday Oct 18, then once a day
+    - cron: "7 6-23 18 10 *"
     - cron: "0 12 * * *"
   workflow_dispatch: {}
   push:
