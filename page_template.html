@@ -417,9 +417,39 @@ function viewDivision(dv, tab) {
   ${footer()}`;
 }
 
-function viewTeam(key) {
+// A saved team link whose name was later edited on the official sheet: find the team it most likely meant.
+// Tokens that are only a number or a single letter ("OKC Storm- 1" vs "- 2", "Defenders- A" vs "- B")
+// identify different teams from the same club, so those must match exactly.
+function resolveTeam(key) {
+  const cut = key.indexOf('-');
+  const age = key.slice(0, cut), want = key.slice(cut + 1).split('-').filter(Boolean);
+  const ident = toks => toks.filter(x => /^\d+$/.test(x) || x.length === 1).sort().join(' ');
+  const cands = teams.filter(t => slug(t.age) === age).map(t => {
+    const have = t.key.slice(age.length + 1).split('-').filter(Boolean);
+    const shared = want.filter(x => have.includes(x)).length;
+    return { t, score: shared / new Set([...want, ...have]).size, sameIdent: ident(want) === ident(have) };
+  }).filter(c => c.score > 0).sort((a, b) => b.score - a.score);
+  const good = cands.filter(c => c.sameIdent && c.score >= 0.5);
+  if (good.length === 1 || (good.length > 1 && good[0].score - good[1].score >= 0.2)) return { match: good[0].t };
+  return { suggest: cands.slice(0, 5).map(c => c.t) };
+}
+
+function viewTeam(key, note = '') {
   const t = teamIdx.get(key);
-  if (!t) { setTitle(''); main.innerHTML = `<div class="panel">No team found for that link. The name may have changed on the official sheet. Try the search box above.</div>`; return }
+  if (!t) {
+    const r = resolveTeam(key);
+    if (r.match) {
+      current = 't-' + r.match.key;
+      store.set('nchvc.route', current);
+      try { history.replaceState({ route: current }, '', routeUrl(current)) } catch {}
+      return viewTeam(r.match.key, `This link used an older spelling of the team name. The official sheet now lists “${r.match.name}”, and the link has been updated.`);
+    }
+    setTitle('');
+    main.innerHTML = `<div class="panel"><h3 style="font-size:22px;margin-bottom:6px">Team not found</h3>
+      <p style="margin:0 0 10px">The name in this link doesn't match a team on the official sheets. The organizers may have renamed it.</p>
+      ${r.suggest.length ? `<span class="label">Did you mean</span><div class="path" style="margin-top:6px">${r.suggest.map(x => `<div>${tlink(x.name, x.age)} <span class="muted">${esc(x.age)}</span></div>`).join('')}</div>` : '<p class="muted" style="margin:0">Try the search box above.</p>'}</div>`;
+    return;
+  }
   const mine = all.filter(m => (m.a === t.name || m.b === t.name) && m.div.age === t.age);
   const uniq = []; const seen = new Set();
   for (const m of mine) { const k = m.kind + m.name + m.a + m.b + m.day + m.mins; if (!seen.has(k)) { seen.add(k); uniq.push(m) } }
@@ -441,7 +471,7 @@ function viewTeam(key) {
     </div>`;
   }).join('');
   setTitle(`${t.name} (${t.age})`);
-  main.innerHTML = `
+  main.innerHTML = `${note ? `<div class="notice">${esc(note)}</div>` : ''}
   <div class="tv-head spread"><div><span class="label">${esc(t.gender)} · ${esc(t.age)} · ${esc(dvs.map(d => d.short).join(', '))}</span><h2>${esc(t.name)}</h2></div>
     <div class="row"><span class="num" style="font-family:var(--f-display);font-size:28px">${rec.w}–${rec.l}${rec.s ? '–' + rec.s : ''}</span><span class="muted">match record${rec.s ? ' (W–L–split)' : ''}</span>${shareBtn(`${t.name} (${t.age})`)}</div></div>
   ${next ? `<div class="next"><span class="label">${next.status === 'live' ? 'Playing now' : 'Next match'}</span>
