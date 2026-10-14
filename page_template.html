@@ -146,6 +146,9 @@ td.r, th.r { text-align: right }
 .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden }
 .seg button { border: 0; background: var(--surface); padding: 6px 14px; cursor: pointer; font-weight: 600 }
 .seg button.on { background: var(--accent); color: var(--accent-ink) }
+.share { display: inline-flex; gap: 6px; align-items: center; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 6px 13px; font-weight: 600; cursor: pointer; white-space: nowrap }
+.share:hover { border-color: var(--accent); color: var(--accent) }
+#toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 18px; border-radius: 999px; z-index: 50; font-weight: 600; max-width: calc(100% - 32px); overflow-wrap: anywhere; text-align: center; box-shadow: 0 8px 24px rgb(0 0 0 / .25) }
 @media (prefers-reduced-motion: no-preference) { .chip, .divcard, .tab { transition: border-color .15s, background .15s, color .15s } }
 </style>
 
@@ -161,6 +164,7 @@ td.r, th.r { text-align: right }
   <nav class="strip" id="strip" aria-label="Divisions"></nav>
 </header>
 <!--BANNER--><main id="main"></main>
+<div id="toast" role="status" aria-live="polite" hidden></div>
 
 <script id="nchvc-data" type="application/json">__DATA__</script>
 <script>
@@ -262,6 +266,22 @@ function renderStrip(active) {
   strip.innerHTML = rows.map(([g, ds]) => `<div class="strip-row"><span class="label">${g}</span>${ds.map(d => `<button class="chip ${active === d.id ? 'on' : ''}" data-go="d-${d.id}">${esc(d.short)}</button>`).join('')}${g === 'Girls' ? `<span style="flex:1"></span><button class="chip ${active === 'courts' ? 'on' : ''}" data-go="courts">By court</button>` : ''}</div>`).join('');
 }
 
+// ---------- sharing & titles ----------
+const BASE_TITLE = document.title;
+const CAN_SHARE = (() => { try { return window.top === window && /^https?:$/.test(location.protocol) } catch { return false } })();
+const setTitle = s => { document.title = s ? `${s} · ${BASE_TITLE}` : BASE_TITLE };
+const shareBtn = label => CAN_SHARE ? `<button class="share" data-share="${esc(label)}" aria-label="Share a link to this page"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7"/><path d="M16 6l-4-4-4 4"/><path d="M12 2v14"/></svg>Share</button>` : '';
+let toastTimer;
+function toast(msg) { const el = $('#toast'); el.textContent = msg; el.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { el.hidden = true }, 3500) }
+async function share(label) {
+  const url = urlFor(current);
+  if (navigator.share && matchMedia('(pointer: coarse)').matches) {  // phones: native share sheet
+    try { await navigator.share({ title: `${label} · ${BASE_TITLE}`, url }); return } catch (e) { if (e.name === 'AbortError') return }
+  }
+  try { await navigator.clipboard.writeText(url); toast('Link copied') }
+  catch { toast(url) }  // clipboard blocked: show the link so it can be selected
+}
+
 // ---------- views ----------
 const main = $('#main');
 function freshness() {
@@ -279,6 +299,7 @@ function footer() {
 }
 
 function viewHome() {
+  setTitle('');
   const info = D.info || {};
   const notices = [...new Set(sheets.flatMap(s => s.notices || []))].filter(n => /DRAFT|change/i.test(n));
   const venue = Object.keys(info).find(k => k.includes('Bluhawk')) || '';
@@ -387,9 +408,10 @@ function viewDivision(dv, tab) {
       return `<section><div class="btitle"><span class="tier t-${cur.tier}"></span><h3>${esc(title)}</h3></div>${bracketCanvas(cl, dv)}</section>`;
     }).join('') + (b.results.length ? `<div class="results">${b.results.map(r => `<div class="panel"><span class="label">${esc(r.title)}</span><table><tbody>${r.rows.map(x => `<tr><td class="num" style="width:40px">${esc(x.rank)}</td><td>${x.team ? tlink(x.team, dv.age) : '<span class="tbd muted">TBD</span>'}</td><td class="adv r">→ ${esc(x.adv)}</td></tr>`).join('')}</tbody></table></div>`).join('')}</div>` : '');
   }
+  setTitle(`${dv.short} ${cur.label}`);
   main.innerHTML = `
   <div class="spread"><div><span class="label">${esc(dv.gender)}</span><h2 style="font-size:36px;line-height:1.05">${esc(dv.short)}</h2></div>
-    <div class="row"><span class="muted num">${pr.done} of ${pr.tot} matches final</span><a href="${esc(dv.sheet.url)}" target="_blank" rel="noopener">Official sheet ↗</a></div></div>
+    <div class="row"><span class="muted num">${pr.done} of ${pr.tot} matches final</span><a href="${esc(dv.sheet.url)}" target="_blank" rel="noopener">Official sheet ↗</a>${shareBtn(`${dv.short} ${cur.label}`)}</div></div>
   <div class="tabs" role="tablist">${tabs.map(t => `<button class="tab ${t === cur ? 'on' : ''}" role="tab" aria-selected="${t === cur}" data-go="d-${dv.id}~${t.id}"><span class="tier t-${t.tier}"></span>${esc(t.label)}</button>`).join('')}</div>
   ${body}
   ${footer()}`;
@@ -397,7 +419,7 @@ function viewDivision(dv, tab) {
 
 function viewTeam(key) {
   const t = teamIdx.get(key);
-  if (!t) { main.innerHTML = `<div class="panel">No team found for that link. Try the search box above.</div>`; return }
+  if (!t) { setTitle(''); main.innerHTML = `<div class="panel">No team found for that link. The name may have changed on the official sheet. Try the search box above.</div>`; return }
   const mine = all.filter(m => (m.a === t.name || m.b === t.name) && m.div.age === t.age);
   const uniq = []; const seen = new Set();
   for (const m of mine) { const k = m.kind + m.name + m.a + m.b + m.day + m.mins; if (!seen.has(k)) { seen.add(k); uniq.push(m) } }
@@ -418,9 +440,10 @@ function viewTeam(key) {
         p.standings.length ? `<span class="label">If they finish…</span><table><tbody>${p.standings.map(s => `<tr><td class="num" style="width:44px">${esc(s.rank)}</td><td class="adv">→ ${esc(s.adv)}</td></tr>`).join('')}</tbody></table>` : ''}
     </div>`;
   }).join('');
+  setTitle(`${t.name} (${t.age})`);
   main.innerHTML = `
   <div class="tv-head spread"><div><span class="label">${esc(t.gender)} · ${esc(t.age)} · ${esc(dvs.map(d => d.short).join(', '))}</span><h2>${esc(t.name)}</h2></div>
-    <div class="row"><span class="num" style="font-family:var(--f-display);font-size:28px">${rec.w}–${rec.l}${rec.s ? '–' + rec.s : ''}</span><span class="muted">match record${rec.s ? ' (W–L–split)' : ''}</span></div></div>
+    <div class="row"><span class="num" style="font-family:var(--f-display);font-size:28px">${rec.w}–${rec.l}${rec.s ? '–' + rec.s : ''}</span><span class="muted">match record${rec.s ? ' (W–L–split)' : ''}</span>${shareBtn(`${t.name} (${t.age})`)}</div></div>
   ${next ? `<div class="next"><span class="label">${next.status === 'live' ? 'Playing now' : 'Next match'}</span>
      <h3>${when(next)} · ${esc(court(next.court))}</h3>
      ${next.rolling ? `<div class="muted" style="margin-bottom:4px">${rollNote(next)}</div>` : ''}
@@ -441,8 +464,10 @@ function viewCourts(day) {
   const by = new Map();
   for (const m of all.filter(m => m.day === d)) { const c = court(m.court) || 'TBD'; if (!by.has(c)) by.set(c, []); by.get(c).push(m) }
   const keys = [...by.keys()].sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+  const dayName = ['Thursday', 'Friday', 'Saturday'][d];
+  setTitle(`Courts · ${dayName}`);
   main.innerHTML = `<div class="spread"><h2 style="font-size:36px">By court</h2>
-    <div class="seg" role="tablist">${days.map(x => `<button class="${x === d ? 'on' : ''}" data-go="courts~${x}">${['Thursday', 'Friday', 'Saturday'][x]}</button>`).join('')}</div></div>
+    <div class="row"><div class="seg" role="tablist">${days.map(x => `<button class="${x === d ? 'on' : ''}" data-go="courts~${x}">${['Thursday', 'Friday', 'Saturday'][x]}</button>`).join('')}</div>${shareBtn(`Courts · ${dayName}`)}</div></div>
   <p class="muted" style="margin:0">All divisions at AdventHealth Sports Park at Bluhawk. Pool matches after the first are “rolling”: they start when the previous match ends.</p>
   <div class="courts">${keys.map(k => `<div class="panel court"><h3>${esc(k)}</h3>${by.get(k).map(m => `<div class="cm"><div class="num muted">${m.rolling ? `#${m.order} rolling` : esc(String(m.timeLabel).replace(/^(THU|FRI|SAT)\s+/i, ''))}</div>
       <div style="min-width:0"><div style="font-size:12px" class="muted">${esc(m.div.short)} · ${esc(m.name.replace(new RegExp('^' + m.div.age + '\\s*(D\\d\\s*)?', 'i'), ''))}</div>
@@ -452,10 +477,36 @@ function viewCourts(day) {
 }
 
 // ---------- routing ----------
+// Hosted site: clean paths (/team/..., /d/<division>/<tab>, /courts/fri); demo + artifact: #route
+const DAYSLUG = ['thu', 'fri', 'sat'];
+function routeToPath(route) {
+  const [h, sub] = route.split('~');
+  if (h.startsWith('d-')) return '/d/' + h.slice(2) + (sub ? '/' + sub : '');
+  if (h.startsWith('t-')) return '/team/' + h.slice(2);
+  if (h === 'courts') return '/courts' + (sub != null && DAYSLUG[+sub] ? '/' + DAYSLUG[+sub] : '');
+  return '/';
+}
+function pathToRoute(path) {
+  const s = path.split('/').filter(Boolean).map(x => { try { return decodeURIComponent(x) } catch { return x } });
+  if (s[0] === 'd' && s[1]) return 'd-' + s[1] + (s[2] ? '~' + s[2] : '');
+  if (s[0] === 'team' && s[1]) return 't-' + s[1];
+  if (s[0] === 'courts') { const i = DAYSLUG.indexOf(s[1]); return 'courts' + (i >= 0 ? '~' + i : '') }
+  return null;
+}
+const routeUrl = route => LIVE ? routeToPath(route) : location.pathname + (route === 'home' ? '' : '#' + route);
+const urlFor = route => location.origin + routeUrl(route);
+function routeFromUrl() {
+  const h = (location.hash || '').slice(1);
+  if (h) return h;  // older #links still work
+  return (LIVE && pathToRoute(location.pathname)) || 'home';
+}
 let current = 'home';
 function go(route, push = true, keepScroll = false) {
   current = route;
-  if (push) { try { history.replaceState(null, '', '#' + route.replace(/[^A-Za-z0-9._~-]/g, '-')) } catch {} store.set('nchvc.route', route) }
+  if (push) {
+    store.set('nchvc.route', route);
+    try { const u = routeUrl(route); if (u !== location.pathname + location.hash) history.pushState({ route }, '', u) } catch {}
+  }
   const [head, sub] = route.split('~');
   if (!keepScroll) window.scrollTo({ top: 0 });
   if (head.startsWith('d-')) { const dv = divisions.find(d => d.id === head.slice(2)); if (dv) { renderStrip(dv.id); return viewDivision(dv, sub) } }
@@ -470,6 +521,8 @@ document.addEventListener('click', e => {
   if (g) { e.preventDefault(); go(g.dataset.go) }
 });
 $('#brand').addEventListener('click', () => go('home'));
+document.addEventListener('click', e => { const s = e.target.closest('[data-share]'); if (s) { e.preventDefault(); share(s.dataset.share) } });
+window.addEventListener('popstate', e => go(e.state?.route || routeFromUrl(), false));
 
 // ---------- search ----------
 const q = $('#q'), sugg = $('#sugg');
@@ -496,14 +549,16 @@ document.addEventListener('click', e => { if (!e.target.closest('.search')) sugg
 // ---------- boot ----------
 const LIVE = !D;  // hosted site: fetch data.json and poll for updates
 async function fetchData() {
-  const r = await fetch('data.json', { cache: 'no-cache' });  // revalidates with ETag: unchanged data costs a 304
+  const r = await fetch('/data.json', { cache: 'no-cache' });  // revalidates with ETag: unchanged data costs a 304
   if (!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
 }
 function startApp() {
   buildModel();
-  const start = (location.hash || '').slice(1) || store.get('nchvc.route') || 'home';
+  let start = routeFromUrl();
+  if (start === 'home' && !location.hash && (!LIVE || location.pathname === '/')) start = store.get('nchvc.route') || 'home';  // reopen where you left off
   go(start, false);
+  try { history.replaceState({ route: start }, '', routeUrl(start)) } catch {}
 }
 if (!LIVE) startApp();
 else {

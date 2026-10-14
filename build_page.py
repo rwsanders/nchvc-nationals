@@ -13,6 +13,9 @@ DEMO_BANNER = ('<div style="background:var(--live);color:var(--surface);text-ali
                'Not real results.</div>')
 SWA_CONFIG = {
     "routes": [{"route": "/data.json", "headers": {"Cache-Control": "no-cache, max-age=0"}}],
+    # /team/..., /d/..., /courts/... are page views handled in the browser
+    "navigationFallback": {"rewrite": "/index.html",
+                           "exclude": ["/data.json", "/demo.html", "/staticwebapp.config.json", "*.{json,js,css,png,ico,svg,txt}"]},
     "globalHeaders": {"X-Content-Type-Options": "nosniff"},
     "mimeTypes": {".json": "application/json"},
 }
