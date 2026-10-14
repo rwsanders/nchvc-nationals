@@ -588,7 +588,7 @@ function startApp() {
   let start = routeFromUrl();
   if (start === 'home' && !location.hash && (!LIVE || location.pathname === '/')) start = store.get('nchvc.route') || 'home';  // reopen where you left off
   go(start, false);
-  try { history.replaceState({ route: start }, '', routeUrl(start)) } catch {}
+  try { history.replaceState({ route: current }, '', routeUrl(current)) } catch {}  // current: a renamed team may have been redirected
 }
 if (!LIVE) startApp();
 else {
