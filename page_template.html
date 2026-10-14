@@ -274,7 +274,7 @@ function freshness() {
 }
 function footer() {
   const t = new Date(D.generated);
-  return `${freshness()}<div class="foot"><span>Pulled from the official NCHVC bracket sheets ${t.toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}. ${LIVE ? 'This page checks for new scores every minute.' : 'Scores appear here after the next refresh.'}</span>
+  return `${freshness()}<div class="foot"><span>Pulled from the official NCHVC bracket sheets ${t.toLocaleString([], { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}. ${LIVE ? 'During the tournament, scores are pulled from the official sheets every 5 minutes, and this page updates itself.' : 'Scores appear here after the next refresh.'}</span>
   <span>Always confirm game times on the <a href="${esc(D.source)}" target="_blank" rel="noopener">official bracket index</a> before heading to a court.</span></div>`;
 }
 
@@ -510,15 +510,17 @@ else {
   main.innerHTML = '<div class="panel muted">Loading the latest brackets…</div>';
   fetchData().then(d => { D = d; startApp() })
     .catch(() => { main.innerHTML = '<div class="panel">Could not load bracket data. Check your connection and reload the page.</div>' });
-  setInterval(async () => {
-    if (document.hidden) return;
+  async function poll() {
+    if (document.hidden || !D) return;
     try {
       const d = await fetchData();
       if (d.generated === D.generated) return;
       D = d; buildModel();
       if (document.activeElement !== q) go(current, false, true);  // re-render in place, keep scroll
     } catch {}
-  }, 60000);
+  }
+  setInterval(poll, 60000);
+  document.addEventListener('visibilitychange', poll);  // check right away when the phone/tab comes back
 }
 })();
 </script>
